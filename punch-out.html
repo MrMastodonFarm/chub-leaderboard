@@ -1,0 +1,1426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Celebrity Punch-Out Ladder</title>
+  <style>
+    :root {
+      --sky-top: #4ea4ff;
+      --sky-mid: #1d58d5;
+      --sky-bottom: #0b2379;
+      --cabinet-black: #050505;
+      --cabinet-red: #bf2319;
+      --cabinet-orange: #f18d16;
+      --cabinet-gold: #f6cf3d;
+      --cabinet-green: #2fc145;
+      --cabinet-cyan: #65dbff;
+      --cabinet-white: #f6f4eb;
+      --cabinet-gray: #b7c4ff;
+      --rope-white: #ddd8cf;
+      --rope-blue: #3aa7ff;
+      --rope-red: #ff4932;
+      --shadow: #000000;
+      --skin-a: #f1c489;
+      --skin-b: #d89a62;
+      --skin-c: #9b5d3c;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      min-height: 100vh;
+      background:
+        linear-gradient(180deg, #75c1ff 0 18px, #2d6bff 18px 40px, #0d2389 40px 100%);
+      color: var(--cabinet-white);
+      font-family: "Courier New", monospace;
+      image-rendering: pixelated;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background:
+        repeating-linear-gradient(
+          180deg,
+          rgba(255, 255, 255, 0.06) 0 2px,
+          transparent 2px 6px
+        );
+      opacity: 0.16;
+      pointer-events: none;
+    }
+
+    .shell {
+      width: min(1260px, calc(100% - 14px));
+      margin: 0 auto;
+      padding: 8px 0 26px;
+    }
+
+    .marquee,
+    .top-strip,
+    .hud-box,
+    .rank-card,
+    .arena,
+    .circuit-box,
+    .fighter-card,
+    .speaker-box {
+      border: 3px solid var(--shadow);
+      box-shadow:
+        inset 0 0 0 2px var(--cabinet-gray),
+        0 0 0 2px var(--shadow);
+    }
+
+    .marquee {
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(180deg, #00144f 0 18%, #1433b0 18% 58%, #081b6d 58% 100%);
+      padding: 12px 14px 14px;
+      margin-bottom: 12px;
+    }
+
+    .marquee::before,
+    .marquee::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .marquee::before {
+      background:
+        radial-gradient(circle at 10% 24%, #f7d03e 0 2px, transparent 2px),
+        radial-gradient(circle at 22% 70%, #f7d03e 0 2px, transparent 2px),
+        radial-gradient(circle at 79% 28%, #f7d03e 0 2px, transparent 2px),
+        radial-gradient(circle at 91% 64%, #f7d03e 0 2px, transparent 2px);
+      opacity: 0.75;
+    }
+
+    .marquee::after {
+      background: linear-gradient(90deg, transparent 0, rgba(255, 255, 255, 0.12) 48%, transparent 100%);
+      transform: skewX(-22deg) translateX(-58%);
+      animation: cabinetShine 7s linear infinite;
+    }
+
+    .marquee-grid {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: 132px 1fr 132px;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .star-column {
+      display: grid;
+      gap: 6px;
+      justify-items: center;
+    }
+
+    .star-badge,
+    .record-chip {
+      min-width: 108px;
+      padding: 7px 8px;
+      background: var(--cabinet-red);
+      color: var(--cabinet-white);
+      text-align: center;
+      font-size: 0.72rem;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #ffd8a9;
+    }
+
+    .record-chip {
+      background: #0d8bd1;
+    }
+
+    .title-stack {
+      display: grid;
+      gap: 4px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .title-kicker {
+      color: var(--cabinet-cyan);
+      font-size: 0.76rem;
+    }
+
+    .title-main {
+      display: inline-grid;
+      gap: 2px;
+      line-height: 0.9;
+    }
+
+    .title-main span {
+      display: inline-block;
+      padding: 3px 12px 5px;
+      background: var(--cabinet-orange);
+      color: #190800;
+      font-size: clamp(1.55rem, 4.7vw, 3.15rem);
+      box-shadow:
+        4px 0 0 #6a1b00,
+        -4px 0 0 #6a1b00,
+        0 4px 0 #6a1b00,
+        0 -4px 0 #6a1b00;
+    }
+
+    .title-main .title-blue {
+      background: var(--cabinet-cyan);
+      color: #021435;
+      box-shadow:
+        4px 0 0 #043870,
+        -4px 0 0 #043870,
+        0 4px 0 #043870,
+        0 -4px 0 #043870;
+    }
+
+    .title-sub {
+      color: #d7e2ff;
+      font-size: 0.76rem;
+      line-height: 1.35;
+      max-width: 740px;
+    }
+
+    .top-strip {
+      background: var(--cabinet-black);
+      padding: 10px;
+      margin-bottom: 12px;
+    }
+
+    .controls {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(120px, 1fr));
+      gap: 8px;
+      align-items: end;
+    }
+
+    .field {
+      display: grid;
+      gap: 4px;
+    }
+
+    .field label,
+    .mini-label,
+    .circuit-title,
+    .card-rank,
+    .card-status,
+    .speaker-title {
+      font-size: 0.7rem;
+      letter-spacing: 0.06em;
+    }
+
+    .field label {
+      color: var(--cabinet-gold);
+    }
+
+    .field input {
+      width: 100%;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #fff;
+      background: #f4f2ea;
+      color: #000;
+      padding: 10px 8px;
+      font: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      text-transform: none;
+    }
+
+    .field input:focus {
+      outline: 2px solid var(--cabinet-cyan);
+      outline-offset: 1px;
+    }
+
+    .controls button {
+      height: 44px;
+      border: 2px solid var(--shadow);
+      box-shadow:
+        inset 0 0 0 2px #fff4ae,
+        0 3px 0 #6d2700;
+      background: linear-gradient(180deg, #ffbd43 0, #ef7f17 100%);
+      color: #220500;
+      font: inherit;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .controls button:active {
+      transform: translateY(2px);
+      box-shadow:
+        inset 0 0 0 2px #fff4ae,
+        0 1px 0 #6d2700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: 308px 1fr;
+      gap: 12px;
+      align-items: start;
+    }
+
+    .left-column {
+      display: grid;
+      gap: 12px;
+    }
+
+    .hud-box,
+    .rank-card,
+    .circuit-box,
+    .speaker-box {
+      background: var(--cabinet-black);
+      padding: 10px;
+    }
+
+    .hud-box {
+      display: grid;
+      gap: 10px;
+    }
+
+    .hud-head,
+    .speaker-title {
+      color: var(--cabinet-orange);
+      font-size: 0.8rem;
+    }
+
+    .stat-grid {
+      display: grid;
+      gap: 8px;
+    }
+
+    .stat-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+      color: var(--cabinet-white);
+      font-size: 0.9rem;
+    }
+
+    .mini-label {
+      color: var(--cabinet-gray);
+    }
+
+    .meter {
+      height: 16px;
+      background: #000;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #fff;
+      overflow: hidden;
+    }
+
+    .meter-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--cabinet-green) 0 12px,
+        var(--cabinet-gold) 12px 24px,
+        var(--cabinet-orange) 24px 36px
+      );
+      width: 0;
+    }
+
+    .rank-card {
+      display: grid;
+      gap: 10px;
+      text-align: center;
+      background:
+        linear-gradient(180deg, #180e52 0, #06031a 100%);
+    }
+
+    .rank-banner {
+      background: var(--cabinet-red);
+      color: var(--cabinet-white);
+      padding: 6px;
+      font-size: 0.76rem;
+    }
+
+    .rank-big {
+      color: var(--cabinet-cyan);
+      font-size: 1.5rem;
+      text-shadow: 2px 2px 0 #00113b;
+    }
+
+    .next-fight {
+      color: var(--cabinet-gold);
+      font-size: 0.82rem;
+      line-height: 1.45;
+      text-align: left;
+    }
+
+    .speaker-box {
+      display: grid;
+      gap: 8px;
+      background:
+        linear-gradient(180deg, #012445 0, #07111e 100%);
+    }
+
+    .speaker-text {
+      color: #e4f5ff;
+      font-size: 0.76rem;
+      line-height: 1.45;
+    }
+
+    .speaker-text strong {
+      color: var(--cabinet-gold);
+    }
+
+    .speaker-text span {
+      color: var(--cabinet-cyan);
+    }
+
+    .arena {
+      background: #000;
+      overflow: hidden;
+    }
+
+    .score-strip {
+      background:
+        linear-gradient(180deg, #0b1034 0, #050505 100%);
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 10px;
+      align-items: center;
+      padding: 8px 10px;
+      font-size: 0.72rem;
+      color: var(--cabinet-white);
+      min-height: 62px;
+      border-bottom: 3px solid var(--shadow);
+      box-shadow: inset 0 -2px 0 var(--cabinet-gray);
+    }
+
+    .score-side {
+      display: grid;
+      gap: 4px;
+    }
+
+    .score-side.right {
+      text-align: right;
+    }
+
+    .score-name {
+      color: var(--cabinet-orange);
+    }
+
+    .score-value {
+      color: var(--cabinet-cyan);
+      font-size: 1rem;
+    }
+
+    .vs-box {
+      background: var(--cabinet-red);
+      color: var(--cabinet-white);
+      padding: 8px 12px;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #fff;
+      font-size: 1.1rem;
+    }
+
+    .fight-scene {
+      position: relative;
+      min-height: 560px;
+      background:
+        linear-gradient(180deg, var(--sky-top) 0 14%, var(--sky-mid) 14% 64%, var(--sky-bottom) 64% 100%);
+      overflow: hidden;
+    }
+
+    .arena-art {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center bottom;
+      opacity: 0.82;
+      image-rendering: pixelated;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .fight-scene::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0 7%, transparent 7% 100%),
+        repeating-linear-gradient(90deg, transparent 0 110px, rgba(255, 255, 255, 0.08) 110px 114px);
+      opacity: 0.25;
+      pointer-events: none;
+    }
+
+    .spotlight {
+      position: absolute;
+      top: 0;
+      width: 260px;
+      height: 280px;
+      background: radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.45) 0, rgba(255, 255, 255, 0) 72%);
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .spotlight.left {
+      left: 6%;
+    }
+
+    .spotlight.right {
+      right: 6%;
+    }
+
+    .speech {
+      position: absolute;
+      top: 18px;
+      right: 16px;
+      max-width: 280px;
+      background: #fff;
+      color: #000;
+      border: 3px solid var(--shadow);
+      padding: 10px 12px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      box-shadow: 4px 4px 0 var(--shadow);
+      z-index: 3;
+    }
+
+    .speech strong {
+      color: var(--cabinet-red);
+    }
+
+    .fighter {
+      position: absolute;
+      bottom: 56px;
+      width: 120px;
+      height: 188px;
+      filter: drop-shadow(4px 4px 0 #000);
+      z-index: 2;
+    }
+
+    .fighter.user {
+      left: 16%;
+      transform: scale(0.94);
+    }
+
+    .fighter.opponent {
+      right: 16%;
+      transform: scale(1.18);
+    }
+
+    .pixel-body {
+      position: absolute;
+      inset: 0;
+    }
+
+    .fighter .head,
+    .fighter .hair,
+    .fighter .torso,
+    .fighter .waist,
+    .fighter .arm,
+    .fighter .glove,
+    .fighter .shorts,
+    .fighter .leg,
+    .fighter .shoe,
+    .fighter .trunk-stripe {
+      position: absolute;
+      background: currentColor;
+    }
+
+    .fighter.user {
+      color: #3f7bff;
+    }
+
+    .fighter.opponent {
+      color: #e6802d;
+    }
+
+    .fighter.user .head,
+    .fighter.opponent .head {
+      width: 34px;
+      height: 36px;
+      top: 8px;
+      left: 43px;
+      background: var(--skin-b);
+      box-shadow: inset 0 -5px 0 rgba(0, 0, 0, 0.16);
+    }
+
+    .fighter.user .hair {
+      width: 32px;
+      height: 9px;
+      top: 5px;
+      left: 44px;
+      background: #101010;
+    }
+
+    .fighter.opponent .hair {
+      width: 36px;
+      height: 11px;
+      top: 4px;
+      left: 42px;
+      background: #3f210b;
+    }
+
+    .fighter.user .torso {
+      width: 40px;
+      height: 54px;
+      top: 48px;
+      left: 41px;
+      background: #122b2e;
+    }
+
+    .fighter.opponent .torso {
+      width: 48px;
+      height: 66px;
+      top: 46px;
+      left: 36px;
+      background: #db7c2f;
+    }
+
+    .fighter.user .waist {
+      width: 42px;
+      height: 10px;
+      top: 100px;
+      left: 40px;
+      background: #f0f0f0;
+    }
+
+    .fighter.opponent .waist {
+      width: 50px;
+      height: 10px;
+      top: 112px;
+      left: 35px;
+      background: #ffe49e;
+    }
+
+    .fighter.user .arm.left {
+      width: 18px;
+      height: 58px;
+      top: 54px;
+      left: 22px;
+      background: var(--skin-b);
+      transform: skewY(6deg);
+    }
+
+    .fighter.user .arm.right {
+      width: 18px;
+      height: 58px;
+      top: 52px;
+      right: 22px;
+      background: var(--skin-b);
+      transform: skewY(-5deg);
+    }
+
+    .fighter.opponent .arm.left {
+      width: 20px;
+      height: 64px;
+      top: 56px;
+      left: 12px;
+      background: var(--skin-b);
+      transform: skewY(7deg);
+    }
+
+    .fighter.opponent .arm.right {
+      width: 20px;
+      height: 64px;
+      top: 56px;
+      right: 12px;
+      background: var(--skin-b);
+      transform: skewY(-7deg);
+    }
+
+    .fighter.user .glove.left,
+    .fighter.user .glove.right,
+    .fighter.opponent .glove.left,
+    .fighter.opponent .glove.right {
+      width: 24px;
+      height: 24px;
+      background: #ff432f;
+      top: 82px;
+    }
+
+    .fighter.user .glove.left {
+      left: 8px;
+    }
+
+    .fighter.user .glove.right {
+      right: 8px;
+    }
+
+    .fighter.opponent .glove.left {
+      left: -1px;
+    }
+
+    .fighter.opponent .glove.right {
+      right: -1px;
+    }
+
+    .fighter.user .shorts {
+      width: 42px;
+      height: 30px;
+      top: 110px;
+      left: 40px;
+      background: #2c69ff;
+    }
+
+    .fighter.opponent .shorts {
+      width: 50px;
+      height: 32px;
+      top: 122px;
+      left: 35px;
+      background: #219432;
+    }
+
+    .fighter.user .trunk-stripe {
+      width: 42px;
+      height: 7px;
+      top: 120px;
+      left: 40px;
+      background: #fff5a8;
+    }
+
+    .fighter.opponent .trunk-stripe {
+      width: 50px;
+      height: 8px;
+      top: 132px;
+      left: 35px;
+      background: #fff3a2;
+    }
+
+    .fighter.user .leg.left,
+    .fighter.user .leg.right,
+    .fighter.opponent .leg.left,
+    .fighter.opponent .leg.right {
+      width: 16px;
+      height: 42px;
+      background: var(--skin-b);
+      top: 138px;
+    }
+
+    .fighter.user .leg.left {
+      left: 44px;
+    }
+
+    .fighter.user .leg.right {
+      right: 44px;
+    }
+
+    .fighter.opponent .leg.left {
+      left: 41px;
+    }
+
+    .fighter.opponent .leg.right {
+      right: 41px;
+    }
+
+    .fighter.user .shoe.left,
+    .fighter.user .shoe.right,
+    .fighter.opponent .shoe.left,
+    .fighter.opponent .shoe.right {
+      width: 22px;
+      height: 10px;
+      background: #111;
+      top: 178px;
+    }
+
+    .fighter.user .shoe.left {
+      left: 38px;
+    }
+
+    .fighter.user .shoe.right {
+      right: 38px;
+    }
+
+    .fighter.opponent .shoe.left {
+      left: 36px;
+    }
+
+    .fighter.opponent .shoe.right {
+      right: 36px;
+    }
+
+    .roster {
+      margin-top: 12px;
+      display: grid;
+      gap: 12px;
+      padding: 12px;
+      background:
+        linear-gradient(180deg, #060b2b 0, #000 100%);
+      border-top: 3px solid var(--shadow);
+      box-shadow: inset 0 2px 0 var(--cabinet-gray);
+    }
+
+    .circuit-box {
+      display: grid;
+      gap: 10px;
+      background:
+        linear-gradient(180deg, #090909 0, #061b6e 100%);
+    }
+
+    .circuit-title {
+      color: var(--cabinet-orange);
+      font-size: 0.82rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .circuit-title::after {
+      content: "World Video Boxing";
+      color: var(--cabinet-cyan);
+      font-size: 0.64rem;
+    }
+
+    .circuit-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 10px;
+    }
+
+    .fighter-card {
+      background:
+        linear-gradient(180deg, #0f39c0 0, #06155f 100%);
+      padding: 8px;
+      display: grid;
+      gap: 8px;
+      min-height: 164px;
+    }
+
+    .fighter-top {
+      display: grid;
+      grid-template-columns: auto auto 1fr;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .card-rank {
+      background: var(--cabinet-red);
+      padding: 4px 6px;
+    }
+
+    .card-status {
+      background: var(--cabinet-gold);
+      color: #000;
+      padding: 4px 6px;
+    }
+
+    .card-status.cleared {
+      background: var(--cabinet-green);
+    }
+
+    .card-status.next {
+      background: var(--cabinet-orange);
+    }
+
+    .card-status.locked {
+      background: #d4d8ff;
+    }
+
+    .belt-chip {
+      justify-self: end;
+      background: #031030;
+      color: var(--cabinet-cyan);
+      padding: 4px 6px;
+      font-size: 0.62rem;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 1px #9ab7ff;
+    }
+
+    .card-body {
+      display: grid;
+      grid-template-columns: 78px 1fr;
+      gap: 8px;
+      align-items: start;
+    }
+
+    .portrait {
+      width: 78px;
+      height: 78px;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #fff;
+      background:
+        linear-gradient(180deg, #6a4bff 0 40%, #178bc9 40% 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .portrait::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0 16%, transparent 16% 100%);
+    }
+
+    .portrait img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      image-rendering: pixelated;
+      z-index: 1;
+    }
+
+    .portrait.has-art .hair,
+    .portrait.has-art .face,
+    .portrait.has-art .shirt,
+    .portrait.has-art .gloves {
+      display: none;
+    }
+
+    .portrait .hair,
+    .portrait .face,
+    .portrait .shirt,
+    .portrait .gloves {
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .portrait .hair {
+      top: 10px;
+      width: 40px;
+      height: 18px;
+      background: var(--hair, #1d1d1d);
+    }
+
+    .portrait .face {
+      top: 22px;
+      width: 34px;
+      height: 28px;
+      background: var(--skin, var(--skin-a));
+      box-shadow: inset 0 -4px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    .portrait .face::before,
+    .portrait .face::after {
+      content: "";
+      position: absolute;
+      top: 8px;
+      width: 4px;
+      height: 4px;
+      background: #111;
+    }
+
+    .portrait .face::before {
+      left: 8px;
+    }
+
+    .portrait .face::after {
+      right: 8px;
+    }
+
+    .portrait .shirt {
+      top: 52px;
+      width: 48px;
+      height: 18px;
+      background: var(--shirt, #ff5f38);
+    }
+
+    .portrait .gloves {
+      top: 48px;
+      width: 60px;
+      height: 10px;
+      background:
+        linear-gradient(90deg, #ff5038 0 18%, transparent 18% 82%, #ff5038 82% 100%);
+    }
+
+    .card-name {
+      color: var(--cabinet-white);
+      font-size: 0.95rem;
+      line-height: 1.25;
+    }
+
+    .card-meta {
+      color: #d4d8ff;
+      font-size: 0.72rem;
+      line-height: 1.45;
+      margin-top: 5px;
+    }
+
+    .tiny-meter {
+      height: 12px;
+      background: #000;
+      border: 2px solid var(--shadow);
+      box-shadow: inset 0 0 0 2px #fff;
+      overflow: hidden;
+    }
+
+    .tiny-meter-fill {
+      height: 100%;
+      background: repeating-linear-gradient(
+        90deg,
+        var(--cabinet-cyan) 0 10px,
+        #fff 10px 20px
+      );
+      width: 0;
+    }
+
+    .card-note {
+      color: #e7edff;
+      font-size: 0.7rem;
+      line-height: 1.4;
+    }
+
+    .footer-note {
+      margin-top: 14px;
+      text-align: center;
+      color: #d4e0ff;
+      font-size: 0.72rem;
+      line-height: 1.45;
+    }
+
+    @keyframes cabinetShine {
+      0% {
+        transform: skewX(-22deg) translateX(-58%);
+      }
+      100% {
+        transform: skewX(-22deg) translateX(172%);
+      }
+    }
+
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .controls {
+        grid-template-columns: repeat(2, minmax(120px, 1fr));
+      }
+
+      .marquee-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .star-column {
+        grid-auto-flow: column;
+      }
+    }
+
+    @media (max-width: 620px) {
+      .controls {
+        grid-template-columns: 1fr;
+      }
+
+      .score-strip {
+        grid-template-columns: 1fr;
+        justify-items: center;
+        text-align: center;
+      }
+
+      .score-side.right {
+        text-align: center;
+      }
+
+      .fight-scene {
+        min-height: 470px;
+      }
+
+      .fighter.user {
+        left: 4%;
+        transform: scale(0.72);
+      }
+
+      .fighter.opponent {
+        right: 2%;
+        transform: scale(0.86);
+      }
+
+      .speech {
+        position: relative;
+        top: auto;
+        right: auto;
+        margin: 12px;
+        max-width: none;
+      }
+
+      .circuit-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .title-main span {
+        padding-inline: 8px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="marquee">
+      <div class="marquee-grid">
+        <div class="star-column">
+          <div class="star-badge">3 Star Card</div>
+          <div class="record-chip">WVBA Night</div>
+        </div>
+        <div class="title-stack">
+          <div class="title-kicker">Pixel Prizefighting Presents</div>
+          <div class="title-main">
+            <span>Celebrity</span>
+            <span class="title-blue">Punch-Out</span>
+          </div>
+          <p class="title-sub">Track each weight milestone like the next fighter on a cartridge-era title run. Original art direction, clear homage energy.</p>
+        </div>
+        <div class="star-column">
+          <div class="star-badge">Title Defense</div>
+          <div class="record-chip">No. 1 Contender</div>
+        </div>
+      </div>
+    </header>
+
+    <section class="top-strip">
+      <div class="controls">
+        <div class="field">
+          <label for="startWeight">Start Weight</label>
+          <input type="number" id="startWeight" value="242" min="50" max="600">
+        </div>
+        <div class="field">
+          <label for="currentWeight">Current Weight</label>
+          <input type="number" id="currentWeight" value="230" min="50" max="600">
+        </div>
+        <div class="field">
+          <label for="goalWeight">Goal Weight</label>
+          <input type="number" id="goalWeight" value="180" min="50" max="600">
+        </div>
+        <button type="button" id="updateButton">Update Match Card</button>
+      </div>
+    </section>
+
+    <section class="layout">
+      <div class="left-column">
+        <section class="hud-box">
+          <div class="hud-head">Player File</div>
+          <div class="stat-grid" id="summaryStats"></div>
+          <div>
+            <div class="mini-label">Title Progress</div>
+            <div class="meter"><div class="meter-fill" id="careerMeter"></div></div>
+          </div>
+        </section>
+
+        <section class="rank-card">
+          <div class="rank-banner">Current Matchup</div>
+          <div class="rank-big" id="rankLabel">Rank 1</div>
+          <div class="next-fight" id="nextFight"></div>
+        </section>
+
+        <section class="speaker-box">
+          <div class="speaker-title">Trainer Corner</div>
+          <div class="speaker-text" id="coachText"></div>
+        </section>
+      </div>
+
+      <section class="arena">
+        <div class="score-strip">
+          <div class="score-side">
+            <div class="score-name">Player One</div>
+            <div class="score-value" id="scoreCurrent">230 lbs</div>
+            <div id="scoreProgress">12 lbs cleared</div>
+          </div>
+          <div class="vs-box">VS</div>
+          <div class="score-side right">
+            <div class="score-name" id="scoreOpponentName">Kevin James</div>
+            <div class="score-value" id="scoreOpponentWeight">235 lbs</div>
+            <div id="scoreGap">5 lbs gap</div>
+          </div>
+        </div>
+
+        <div class="fight-scene">
+          <img class="arena-art" src="assets/arena-art.png" alt="">
+          <div class="spotlight left"></div>
+          <div class="spotlight right"></div>
+          <div class="speech" id="speechBubble"></div>
+          <div class="fighter user">
+            <div class="pixel-body">
+              <div class="hair"></div>
+              <div class="head"></div>
+              <div class="torso"></div>
+              <div class="waist"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="glove left"></div>
+              <div class="glove right"></div>
+              <div class="shorts"></div>
+              <div class="trunk-stripe"></div>
+              <div class="leg left"></div>
+              <div class="leg right"></div>
+              <div class="shoe left"></div>
+              <div class="shoe right"></div>
+            </div>
+          </div>
+          <div class="fighter opponent">
+            <div class="pixel-body">
+              <div class="hair"></div>
+              <div class="head"></div>
+              <div class="torso"></div>
+              <div class="waist"></div>
+              <div class="arm left"></div>
+              <div class="arm right"></div>
+              <div class="glove left"></div>
+              <div class="glove right"></div>
+              <div class="shorts"></div>
+              <div class="trunk-stripe"></div>
+              <div class="leg left"></div>
+              <div class="leg right"></div>
+              <div class="shoe left"></div>
+              <div class="shoe right"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="roster" id="roster"></div>
+      </section>
+    </section>
+
+    <p class="footer-note">Weights are approximate public figures used here as playful milestones. This page is an original retro boxing homage, not an official Nintendo or Punch-Out screen.</p>
+  </main>
+  <script>
+    const CELEBRITIES = [
+      { name: "Chris Farley", weight: 244, hair: "#b07a3b", shirt: "#38b24a", skin: "#f2c18a" },
+      { name: "John Goodman", weight: 241, hair: "#3c1d0b", shirt: "#de5d35", skin: "#d79860" },
+      { name: "DJ Khaled", weight: 238, hair: "#121212", shirt: "#49c3ff", skin: "#9a5b3b" },
+      { name: "Kevin James", weight: 235, hair: "#5e3715", shirt: "#f1cb31", skin: "#d79860" },
+      { name: "Jonah Hill", weight: 232, hair: "#5f3318", shirt: "#f05e38", skin: "#f2c18a" },
+      { name: "Winston Churchill", weight: 228, hair: "#f4f4f4", shirt: "#8e72ff", skin: "#f2c18a" },
+      { name: "Drew Carey", weight: 225, hair: "#6f3a1f", shirt: "#ff8738", skin: "#f2c18a" },
+      { name: "Jack Black", weight: 220, hair: "#111111", shirt: "#ef6334", skin: "#d79860" },
+      { name: "Babe Ruth", weight: 215, hair: "#302012", shirt: "#4ec2e9", skin: "#d79860" },
+      { name: "John Belushi", weight: 213, hair: "#111111", shirt: "#f6d649", skin: "#f2c18a" },
+      { name: "Rosie O'Donnell", weight: 209, hair: "#5d2a18", shirt: "#39bb4d", skin: "#f2c18a" },
+      { name: "James Corden", weight: 205, hair: "#472717", shirt: "#f3722f", skin: "#f2c18a" },
+      { name: "Adele", weight: 201, hair: "#e4c161", shirt: "#7d67ff", skin: "#f2c18a" },
+      { name: "Seth Rogen", weight: 197, hair: "#5e3218", shirt: "#f08d21", skin: "#d79860" },
+      { name: "Rebel Wilson", weight: 193, hair: "#f0d48f", shirt: "#53d1ff", skin: "#f2c18a" },
+      { name: "Zach Galifianakis", weight: 190, hair: "#171717", shirt: "#4fb34a", skin: "#d79860" },
+      { name: "Oprah Winfrey", weight: 185, hair: "#23110a", shirt: "#ef5f72", skin: "#9a5b3b" }
+    ];
+
+    const CIRCUITS = [
+      { title: "Minor Circuit", start: 0, end: 5 },
+      { title: "Major Circuit", start: 6, end: 11 },
+      { title: "World Circuit", start: 12, end: 16 }
+    ];
+
+    const PORTRAIT_FILES = {
+      "Chris Farley": "chris-farley.png",
+      "John Goodman": "john-goodman.svg",
+      "DJ Khaled": "dj-khaled.png"
+    };
+
+    function fighterSlug(name) {
+      return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    }
+
+    function portraitFile(name) {
+      return PORTRAIT_FILES[name] || `${fighterSlug(name)}.png`;
+    }
+
+    function clamp(number, min, max) {
+      return Math.max(min, Math.min(max, number));
+    }
+
+    function readState() {
+      const start = parseFloat(document.getElementById("startWeight").value) || 242;
+      const current = parseFloat(document.getElementById("currentWeight").value) || 230;
+      const goal = parseFloat(document.getElementById("goalWeight").value) || 180;
+      return {
+        start,
+        current,
+        goal,
+        isLosing: goal < start
+      };
+    }
+
+    function totalDistance(state) {
+      return Math.abs(state.start - state.goal);
+    }
+
+    function progressPercent(state) {
+      const total = totalDistance(state);
+      if (!total) {
+        return state.current === state.goal ? 100 : 0;
+      }
+      return clamp(Math.round((Math.abs(state.start - state.current) / total) * 100), 0, 100);
+    }
+
+    function poundsLost(state) {
+      return state.isLosing
+        ? Math.max(0, state.start - state.current)
+        : Math.max(0, state.current - state.start);
+    }
+
+    function poundsToGoal(state) {
+      return Math.max(0, Math.abs(state.current - state.goal));
+    }
+
+    function withinGoalRun(celeb, state) {
+      return state.isLosing
+        ? celeb.weight <= state.start && celeb.weight >= state.goal
+        : celeb.weight >= state.start && celeb.weight <= state.goal;
+    }
+
+    function cleared(celeb, state) {
+      return state.isLosing
+        ? state.current <= celeb.weight && celeb.weight <= state.start
+        : state.current >= celeb.weight && celeb.weight >= state.start;
+    }
+
+    function getNextTarget(state) {
+      const candidates = CELEBRITIES.filter((celeb) => {
+        return state.isLosing
+          ? celeb.weight < state.current && celeb.weight >= state.goal
+          : celeb.weight > state.current && celeb.weight <= state.goal;
+      });
+      if (!candidates.length) {
+        return null;
+      }
+      return state.isLosing
+        ? [...candidates].sort((a, b) => b.weight - a.weight)[0]
+        : [...candidates].sort((a, b) => a.weight - b.weight)[0];
+    }
+
+    function getStatus(celeb, state, nextTarget) {
+      if (cleared(celeb, state)) {
+        return { label: "Cleared", className: "cleared" };
+      }
+      if (nextTarget && celeb.name === nextTarget.name) {
+        return { label: "Next", className: "next" };
+      }
+      if (withinGoalRun(celeb, state)) {
+        return { label: "Live", className: "" };
+      }
+      return { label: "Locked", className: "locked" };
+    }
+
+    function nextRank(nextTarget) {
+      if (!nextTarget) {
+        return "Champion";
+      }
+      return `Rank ${CELEBRITIES.findIndex((celeb) => celeb.name === nextTarget.name) + 1}`;
+    }
+
+    function buildSummary(state) {
+      const stats = [
+        ["Start", `${state.start} lbs`],
+        ["Current", `${state.current} lbs`],
+        ["Goal", `${state.goal} lbs`],
+        ["Cleared", `${poundsLost(state)} lbs`],
+        ["To Goal", `${poundsToGoal(state)} lbs`]
+      ];
+      document.getElementById("summaryStats").innerHTML = stats.map(([label, value]) => `
+        <div class="stat-row">
+          <div class="mini-label">${label}</div>
+          <div>${value}</div>
+        </div>
+      `).join("");
+      document.getElementById("careerMeter").style.width = `${progressPercent(state)}%`;
+    }
+
+    function buildArena(state, nextTarget) {
+      const opponent = nextTarget || CELEBRITIES[CELEBRITIES.length - 1];
+      const gap = Math.abs(state.current - opponent.weight);
+      document.getElementById("scoreCurrent").textContent = `${state.current} lbs`;
+      document.getElementById("scoreProgress").textContent = `${poundsLost(state)} lbs cleared`;
+      document.getElementById("scoreOpponentName").textContent = nextTarget ? opponent.name : "Goal Reached";
+      document.getElementById("scoreOpponentWeight").textContent = nextTarget ? `${opponent.weight} lbs` : `${state.goal} lbs`;
+      document.getElementById("scoreGap").textContent = nextTarget ? `${gap} lbs gap` : "Victory lap";
+      document.getElementById("rankLabel").textContent = nextRank(nextTarget);
+
+      const speech = document.getElementById("speechBubble");
+      const coachText = document.getElementById("coachText");
+      if (nextTarget) {
+        speech.innerHTML = `<strong>Next bout:</strong> ${gap} lbs until you pass ${opponent.name} at ${opponent.weight} lbs.`;
+        coachText.innerHTML = `<strong>Corner note:</strong> keep pushing. <span>${opponent.name}</span> is the next name on the poster, and the margin is ${gap} lbs.`;
+        document.getElementById("nextFight").innerHTML = `Target opponent: ${opponent.name}<br>Weight class: ${opponent.weight} lbs<br>Gap to clear: ${gap} lbs`;
+        return;
+      }
+
+      if (state.current === state.goal) {
+        speech.innerHTML = `<strong>Title secured:</strong> you reached your goal weight.`;
+        coachText.innerHTML = `<strong>Corner note:</strong> belt won. You hit ${state.goal} lbs and cleared every listed matchup.`;
+        document.getElementById("nextFight").innerHTML = `Goal reached at ${state.goal} lbs.<br>All listed opponents cleared.`;
+        return;
+      }
+
+      speech.innerHTML = `<strong>Open lane:</strong> no more celebrity weights sit between your current number and goal.`;
+      coachText.innerHTML = `<strong>Corner note:</strong> the lane is clear. No listed opponents remain between <span>${state.current} lbs</span> and <span>${state.goal} lbs</span>.`;
+      document.getElementById("nextFight").innerHTML = `No remaining listed matchups between ${state.current} lbs and ${state.goal} lbs.`;
+    }
+
+    function cardProgress(celeb, state) {
+      const total = totalDistance(state) || 1;
+      const toward = Math.abs(state.start - celeb.weight);
+      return clamp(Math.round((toward / total) * 100), 0, 100);
+    }
+
+    function buildRoster(state, nextTarget) {
+      const roster = CIRCUITS.map((circuit) => {
+        const cards = CELEBRITIES.slice(circuit.start, circuit.end + 1).map((celeb, index) => {
+          const status = getStatus(celeb, state, nextTarget);
+          const diff = Math.abs(state.current - celeb.weight);
+          const note = status.label === "Cleared"
+            ? "This weight class is behind you."
+            : status.label === "Next"
+              ? `${diff} lbs until the next win.`
+              : status.label === "Live"
+                ? `${diff} lbs away and still in your run.`
+                : "Outside your current run.";
+
+          return `
+            <article class="fighter-card">
+              <div class="fighter-top">
+                <div class="card-rank">Rank ${circuit.start + index + 1}</div>
+                <div class="card-status ${status.className}">${status.label}</div>
+                <div class="belt-chip">${circuit.title}</div>
+              </div>
+              <div class="card-body">
+                <div class="portrait" style="--hair:${celeb.hair};--skin:${celeb.skin};--shirt:${celeb.shirt};">
+                  <img
+                    src="assets/fighters/${portraitFile(celeb.name)}"
+                    alt=""
+                    onload="this.parentElement.classList.add('has-art')"
+                    onerror="this.remove()"
+                  >
+                  <div class="hair"></div>
+                  <div class="face"></div>
+                  <div class="gloves"></div>
+                  <div class="shirt"></div>
+                </div>
+                <div>
+                  <div class="card-name">${celeb.name}</div>
+                  <div class="card-meta">${celeb.weight} lbs<br>${Math.abs(state.start - celeb.weight)} lbs from start</div>
+                </div>
+              </div>
+              <div class="tiny-meter">
+                <div class="tiny-meter-fill" style="width:${status.label === "Cleared" ? 100 : Math.min(progressPercent(state), cardProgress(celeb, state))}%"></div>
+              </div>
+              <div class="card-note">${note}</div>
+            </article>
+          `;
+        }).join("");
+
+        return `
+          <section class="circuit-box">
+            <div class="circuit-title">${circuit.title}</div>
+            <div class="circuit-grid">${cards}</div>
+          </section>
+        `;
+      }).join("");
+
+      document.getElementById("roster").innerHTML = roster;
+    }
+
+    function renderPage() {
+      const state = readState();
+      const nextTarget = getNextTarget(state);
+      buildSummary(state);
+      buildArena(state, nextTarget);
+      buildRoster(state, nextTarget);
+    }
+
+    document.getElementById("updateButton").addEventListener("click", renderPage);
+    renderPage();
+  </script>
+</body>
+</html>
