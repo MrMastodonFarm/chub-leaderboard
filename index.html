@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Celebrity Weight Scale</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #0d0d1a;
+      color: #e2e8f0;
+      min-height: 100vh;
+    }
+    header {
+      text-align: center;
+      padding: 2rem 1rem 1rem;
+    }
+    header h1 {
+      font-size: 2rem;
+      background: linear-gradient(135deg, #a78bfa, #38bdf8);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    header p { color: #64748b; margin-top: 0.4rem; font-size: 0.95rem; }
+
+    .controls {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 1rem 2rem 1.5rem;
+    }
+    .input-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    label { font-size: 0.72rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.08em; }
+    input[type="number"] {
+      background: #1e1e30;
+      border: 1px solid #2d3748;
+      color: #e2e8f0;
+      padding: 0.55rem 0.9rem;
+      border-radius: 8px;
+      font-size: 1.05rem;
+      width: 130px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    input[type="number"]:focus { border-color: #a78bfa; }
+    button {
+      background: linear-gradient(135deg, #7c3aed, #0ea5e9);
+      border: none;
+      color: white;
+      padding: 0.6rem 1.6rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.95rem;
+      font-weight: 600;
+      align-self: flex-end;
+      transition: opacity 0.2s;
+    }
+    button:hover { opacity: 0.85; }
+
+    .stats {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      flex-wrap: wrap;
+      padding: 0 2rem 1.5rem;
+    }
+    .stat-card {
+      background: #1a1a2e;
+      border: 1px solid #1e293b;
+      border-radius: 10px;
+      padding: 0.7rem 1.4rem;
+      text-align: center;
+    }
+    .stat-value { font-size: 1.5rem; font-weight: 700; }
+    .stat-label { font-size: 0.7rem; color: #64748b; text-transform: uppercase; letter-spacing: 0.07em; margin-top: 2px; }
+
+    .chart-wrapper {
+      overflow-x: auto;
+      padding: 0 1rem 1rem;
+      -webkit-overflow-scrolling: touch;
+      text-align: center;
+    }
+    .chart-inner { position: relative; display: inline-block; text-align: left; }
+
+    .next-celeb {
+      text-align: center;
+      padding: 0 2rem 2rem;
+      color: #94a3b8;
+      font-size: 0.9rem;
+    }
+    .next-celeb strong { color: #f59e0b; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏆 Celebrity Weight Scale</h1>
+  <p>Track your weight loss journey past famous figures</p>
+</header>
+
+<div class="controls">
+  <div class="input-group">
+    <label>Start Weight (lbs)</label>
+    <input type="number" id="startWeight" value="242" min="50" max="600">
+  </div>
+  <div class="input-group">
+    <label>Current Weight (lbs)</label>
+    <input type="number" id="currentWeight" value="230" min="50" max="600">
+  </div>
+  <div class="input-group">
+    <label>Goal Weight (lbs)</label>
+    <input type="number" id="goalWeight" value="180" min="50" max="600">
+  </div>
+  <button onclick="renderChart()">Update Chart</button>
+</div>
+
+<div class="stats" id="stats"></div>
+
+<div class="chart-wrapper">
+  <div class="chart-inner" id="chart"></div>
+</div>
+
+<div class="next-celeb" id="nextCeleb"></div>
+
+<script>
+const CELEBRITIES = [
+  { name: "Oprah Winfrey",       weight: 185, wiki: "Oprah_Winfrey" },
+  { name: "Zach Galifianakis",   weight: 190, wiki: "Zach_Galifianakis" },
+  { name: "Rebel Wilson",        weight: 193, wiki: "Rebel_Wilson" },
+  { name: "Seth Rogen",          weight: 197, wiki: "Seth_Rogen" },
+  { name: "Adele",               weight: 201, wiki: "Adele" },
+  { name: "James Corden",        weight: 205, wiki: "James_Corden" },
+  { name: "Rosie O'Donnell",     weight: 209, wiki: "Rosie_O'Donnell" },
+  { name: "John Belushi",        weight: 213, wiki: "John_Belushi" },
+  { name: "Babe Ruth",           weight: 215, wiki: "Babe_Ruth" },
+  { name: "Jack Black",          weight: 220, wiki: "Jack_Black" },
+  { name: "Drew Carey",          weight: 225, wiki: "Drew_Carey" },
+  { name: "Winston Churchill",   weight: 228, wiki: "Winston_Churchill" },
+  { name: "Jonah Hill",          weight: 232, wiki: "Jonah_Hill" },
+  { name: "Kevin James",         weight: 235, wiki: "Kevin_James" },
+  { name: "DJ Khaled",           weight: 238, wiki: "DJ_Khaled" },
+  { name: "John Goodman",        weight: 241, wiki: "John_Goodman" },
+  { name: "Gabriel Iglesias",    weight: 244, wiki: "Gabriel_Iglesias" },
+];
+
+const photoCache = {};
+
+async function fetchPhoto(wikiTitle) {
+  if (photoCache[wikiTitle] !== undefined) return photoCache[wikiTitle];
+  try {
+    const res = await fetch(`https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(wikiTitle)}`);
+    const data = await res.json();
+    const src = data.thumbnail?.source ?? null;
+    photoCache[wikiTitle] = src;
+    return src;
+  } catch {
+    photoCache[wikiTitle] = null;
+    return null;
+  }
+}
+
+function initials(name) {
+  return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
+}
+
+function renderStats(start, current, goal) {
+  const lost = start - current;
+  const toGo = current - goal;
+  const total = start - goal;
+  const pct = Math.max(0, Math.min(100, Math.round((lost / total) * 100)));
+  const statsEl = document.getElementById('stats');
+  statsEl.innerHTML = `
+    <div class="stat-card">
+      <div class="stat-value" style="color:#ef4444">${start}</div>
+      <div class="stat-label">Start (lbs)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#f59e0b">${current}</div>
+      <div class="stat-label">Current (lbs)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#4ade80">${goal}</div>
+      <div class="stat-label">Goal (lbs)</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#38bdf8">${lost > 0 ? lost : 0}</div>
+      <div class="stat-label">lbs Lost</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#a78bfa">${toGo > 0 ? toGo : 0}</div>
+      <div class="stat-label">lbs to Go</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value" style="color:#fb923c">${pct}%</div>
+      <div class="stat-label">Complete</div>
+    </div>
+  `;
+}
+
+function renderChart() {
+  const start   = parseFloat(document.getElementById('startWeight').value)   || 250;
+  const current = parseFloat(document.getElementById('currentWeight').value) || 230;
+  const goal    = parseFloat(document.getElementById('goalWeight').value)    || 180;
+
+  renderStats(start, current, goal);
+
+  const isLosing = goal < start;
+  // Fixed display range: 245 (left/heavy) → 178 (right/light)
+  const dispMax = 245;
+  const dispMin = 178;
+  const dispRange = dispMax - dispMin;
+
+  // Filter & sort celebs in display range (heavy → light = left → right)
+  const celebs = CELEBRITIES.filter(c => c.weight >= dispMin && c.weight <= dispMax)
+    .sort((a, b) => b.weight - a.weight);
+
+  const PHOTO = 58;
+  const MIN_GAP = PHOTO + 8;
+  const TRACK_Y = 250;
+  const PAD_X = 70;
+  const PX_PER_LB = Math.max(5, Math.min(14, 1000 / dispRange));
+  const chartWidth = Math.max(900, PAD_X * 2 + dispRange * PX_PER_LB);
+  const chartHeight = TRACK_Y + 90;
+
+  // Reversed axis: heavier weight → further left
+  function xPos(w) { return PAD_X + ((dispMax - w) / dispRange) * (chartWidth - PAD_X * 2); }
+
+  const chart = document.getElementById('chart');
+  chart.innerHTML = '';
+  chart.style.width = chartWidth + 'px';
+  chart.style.height = chartHeight + 'px';
+
+  // --- SVG layer ---
+  const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('width', chartWidth);
+  svg.setAttribute('height', chartHeight);
+  svg.style.position = 'absolute';
+  svg.style.top = '0';
+  svg.style.left = '0';
+
+  const ns = 'http://www.w3.org/2000/svg';
+
+  function svgEl(tag, attrs) {
+    const el = document.createElementNS(ns, tag);
+    for (const [k, v] of Object.entries(attrs)) el.setAttribute(k, v);
+    return el;
+  }
+
+  // Defs: gradients + clip paths
+  const defs = svgEl('defs', {});
+
+  const pg = svgEl('linearGradient', { id: 'pg', x1: '0%', x2: '100%', y1: '0%', y2: '0%' });
+  pg.appendChild(Object.assign(svgEl('stop', { offset: '0%' }), { }));
+  pg.children[0].setAttribute('stop-color', '#0ea5e9');
+  const ps2 = svgEl('stop', { offset: '100%' }); ps2.setAttribute('stop-color', '#a78bfa');
+  pg.appendChild(ps2);
+  defs.appendChild(pg);
+  svg.appendChild(defs);
+
+  // Track background
+  svg.appendChild(svgEl('rect', {
+    x: PAD_X, y: TRACK_Y - 4, width: chartWidth - PAD_X * 2, height: 8, rx: 4, fill: '#1e293b'
+  }));
+
+  // Progress fill
+  const cx = xPos(current);
+  const sx = xPos(start);
+  const gx = xPos(goal);
+  // With reversed axis: start (heavy) is left, current is right of start → fill from sx to cx
+  const progX = isLosing ? sx : cx;
+  const progW = Math.abs(cx - sx);
+  if (progW > 0) {
+    svg.appendChild(svgEl('rect', {
+      x: progX, y: TRACK_Y - 4, width: progW, height: 8, rx: 4, fill: 'url(#pg)'
+    }));
+  }
+
+  // Axis tick marks every 10 lbs
+  const tickStep = dispRange > 200 ? 25 : dispRange > 100 ? 10 : 5;
+  const firstTick = Math.ceil(dispMin / tickStep) * tickStep;
+  for (let w = firstTick; w <= dispMax; w += tickStep) {
+    const tx = xPos(w);
+    svg.appendChild(svgEl('line', { x1: tx, y1: TRACK_Y + 8, x2: tx, y2: TRACK_Y + 14, stroke: '#2d3748', 'stroke-width': 1 }));
+    const tickLabel = document.createElementNS(ns, 'text');
+    tickLabel.setAttribute('x', tx);
+    tickLabel.setAttribute('y', TRACK_Y + 26);
+    tickLabel.setAttribute('text-anchor', 'middle');
+    tickLabel.setAttribute('fill', '#334155');
+    tickLabel.setAttribute('font-size', '10');
+    tickLabel.setAttribute('font-family', 'sans-serif');
+    tickLabel.textContent = w;
+    svg.appendChild(tickLabel);
+  }
+
+  // Goal marker
+  svg.appendChild(svgEl('line', { x1: gx, y1: TRACK_Y - 18, x2: gx, y2: TRACK_Y + 18, stroke: '#4ade80', 'stroke-width': 2, 'stroke-dasharray': '5,3' }));
+  const goalLabel = document.createElementNS(ns, 'text');
+  goalLabel.setAttribute('x', gx); goalLabel.setAttribute('y', TRACK_Y + 40);
+  goalLabel.setAttribute('text-anchor', 'middle'); goalLabel.setAttribute('fill', '#4ade80');
+  goalLabel.setAttribute('font-size', '11'); goalLabel.setAttribute('font-family', 'sans-serif');
+  goalLabel.textContent = `🎯 ${goal} lbs`;
+  svg.appendChild(goalLabel);
+
+  // Start marker
+  svg.appendChild(svgEl('line', { x1: sx, y1: TRACK_Y - 18, x2: sx, y2: TRACK_Y + 18, stroke: '#ef4444', 'stroke-width': 2, 'stroke-dasharray': '5,3' }));
+  const startLabel = document.createElementNS(ns, 'text');
+  startLabel.setAttribute('x', sx); startLabel.setAttribute('y', TRACK_Y + 40);
+  startLabel.setAttribute('text-anchor', 'middle'); startLabel.setAttribute('fill', '#ef4444');
+  startLabel.setAttribute('font-size', '11'); startLabel.setAttribute('font-family', 'sans-serif');
+  startLabel.textContent = `▶ ${start} lbs`;
+  svg.appendChild(startLabel);
+
+  // Current weight marker (glow + dot)
+  svg.appendChild(svgEl('circle', { cx, cy: TRACK_Y, r: 18, fill: 'none', stroke: '#f59e0b', 'stroke-width': 1, opacity: 0.3 }));
+  svg.appendChild(svgEl('circle', { cx, cy: TRACK_Y, r: 11, fill: '#f59e0b', stroke: 'white', 'stroke-width': 2.5 }));
+  const youLabel = document.createElementNS(ns, 'text');
+  youLabel.setAttribute('x', cx); youLabel.setAttribute('y', TRACK_Y - 24);
+  youLabel.setAttribute('text-anchor', 'middle'); youLabel.setAttribute('fill', '#f59e0b');
+  youLabel.setAttribute('font-size', '12'); youLabel.setAttribute('font-weight', 'bold');
+  youLabel.setAttribute('font-family', 'sans-serif');
+  youLabel.textContent = `YOU: ${current} lbs`;
+  svg.appendChild(youLabel);
+
+  chart.appendChild(svg);
+
+  // --- Celebrity photo pins (HTML overlay) ---
+  const overlay = document.createElement('div');
+  overlay.style.cssText = `position:absolute;top:0;left:0;width:${chartWidth}px;height:${chartHeight}px;pointer-events:none;`;
+  chart.appendChild(overlay);
+
+  // Track row assignments per side & tier to avoid overlap
+  const rowTracks = {}; // key: `${side}-${tier}` => last x placed
+
+  celebs.forEach((celeb, idx) => {
+    const wx = xPos(celeb.weight);
+
+    // Determine status
+    const passed = isLosing
+      ? (current <= celeb.weight && celeb.weight <= start)
+      : (current >= celeb.weight && celeb.weight >= start);
+    const beyondGoal = isLosing ? celeb.weight < goal : celeb.weight > goal;
+
+    // All celebs go above the track; use tiers to avoid overlap
+    let side = 0;
+    let tier = 0;
+
+    // Check for collision and bump tier
+    for (let t = 0; t < 3; t++) {
+      const key = `${side}-${t}`;
+      if (!rowTracks[key] || Math.abs(rowTracks[key] - wx) > PHOTO + 6) {
+        tier = t;
+        rowTracks[key] = wx;
+        break;
+      }
+    }
+
+    // Connector line
+    const TIER_SPACING = 80;
+    const BASE_ABOVE = TRACK_Y - 12;
+    const BASE_BELOW = TRACK_Y + 12;
+    const lineLen = 60 + tier * TIER_SPACING;
+    const lineY1 = side === 0 ? BASE_ABOVE : BASE_BELOW;
+    const lineY2 = side === 0 ? BASE_ABOVE - lineLen : BASE_BELOW + lineLen;
+    const line = svgEl('line', {
+      x1: wx, y1: lineY1, x2: wx, y2: lineY2,
+      stroke: passed ? '#38bdf8' : '#1e293b',
+      'stroke-width': 1,
+      'stroke-dasharray': beyondGoal ? '3,3' : 'none',
+    });
+    svg.insertBefore(line, svg.lastChild);
+
+    // Photo container
+    const pin = document.createElement('div');
+    const pinTop = side === 0
+      ? (TRACK_Y - 12 - lineLen - PHOTO - 24)
+      : (TRACK_Y + 12 + lineLen);
+
+    pin.style.cssText = `
+      position: absolute;
+      left: ${wx - PHOTO / 2}px;
+      top: ${pinTop}px;
+      width: ${PHOTO}px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    `;
+
+    const circle = document.createElement('div');
+    circle.style.cssText = `
+      width: ${PHOTO}px;
+      height: ${PHOTO}px;
+      border-radius: 50%;
+      border: 3px solid ${passed ? '#38bdf8' : beyondGoal ? '#1e293b' : '#334155'};
+      overflow: hidden;
+      background: #1a1a2e;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: bold;
+      color: #64748b;
+      opacity: ${beyondGoal ? '0.25' : passed ? '1' : '0.55'};
+      filter: ${beyondGoal ? 'grayscale(100%)' : passed ? 'none' : 'grayscale(40%)'};
+      box-shadow: ${passed ? '0 0 10px rgba(56,189,248,0.4)' : 'none'};
+      transition: opacity 0.3s;
+      flex-shrink: 0;
+    `;
+    circle.textContent = initials(celeb.name);
+
+    const nameEl = document.createElement('div');
+    nameEl.style.cssText = `
+      font-size: 8.5px;
+      color: ${passed ? '#38bdf8' : '#475569'};
+      text-align: center;
+      font-family: sans-serif;
+      line-height: 1.2;
+      max-width: ${PHOTO + 20}px;
+    `;
+    nameEl.textContent = celeb.name;
+
+    const wtEl = document.createElement('div');
+    wtEl.style.cssText = `font-size: 8px; color: #7c3aed; font-family: sans-serif;`;
+    wtEl.textContent = celeb.weight + ' lbs';
+
+    pin.appendChild(circle);
+    pin.appendChild(nameEl);
+    pin.appendChild(wtEl);
+    overlay.appendChild(pin);
+
+    // Async photo load
+    fetchPhoto(celeb.wiki).then(src => {
+      if (!src) return;
+      const img = new Image();
+      img.onload = () => {
+        img.style.cssText = 'width:100%;height:100%;object-fit:cover;';
+        circle.textContent = '';
+        circle.appendChild(img);
+      };
+      img.src = src;
+    });
+  });
+
+  // Next celebrity to pass (upcoming: lighter than current, heavier than goal)
+  const nextCeleb = isLosing
+    ? celebs.filter(c => c.weight < current && c.weight >= goal).sort((a, b) => b.weight - a.weight)[0]
+    : celebs.filter(c => c.weight > current && c.weight <= goal).sort((a, b) => a.weight - b.weight)[0];
+  // celebs array is sorted heavy→light, so first match is the closest upcoming milestone
+
+  const nextEl = document.getElementById('nextCeleb');
+  if (nextCeleb) {
+    const diff = Math.abs(current - nextCeleb.weight);
+    nextEl.innerHTML = `Next milestone: <strong>${diff} lbs</strong> to pass <strong>${nextCeleb.name}</strong> (${nextCeleb.weight} lbs)`;
+  } else {
+    nextEl.innerHTML = celebs.length === 0
+      ? 'No celebrities in your weight range — try adjusting your start/goal weights.'
+      : '🎉 You\'ve passed all celebrities in your range!';
+  }
+}
+
+renderChart();
+</script>
+</body>
+</html>
