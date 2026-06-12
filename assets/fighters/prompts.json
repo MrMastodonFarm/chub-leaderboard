@@ -1,0 +1,105 @@
+{
+ "_post_process": "downscale to 96x96 BOX, saturation x1.25, quantize 16 colors MEDIANCUT, upscale NEAREST, save 256x256 (see pixelate() history)",
+ "arch": "sdxl",
+ "checkpoint": "SDXL/juggernautXL_juggXIByRundiffusion.safetensors",
+ "width": 832,
+ "height": 832,
+ "steps": 28,
+ "cfg": 6.0,
+ "sampler": "dpmpp_2m",
+ "scheduler": "karras",
+ "negative": "photo, photorealistic, realistic skin, blurry, deformed, watermark, text, signature, shirtless, bare chest, full body, tiny head",
+ "outdir": "/tmp/gen/roster3",
+ "jobs": [
+  {
+   "name": "adele",
+   "seed": 242,
+   "prompt": "cartoon caricature illustration of British singer Adele as a chubby plus-size heavyweight boxer: very full round face, double chin, plump cheeks, golden blonde shoulder-length hair swept to the side with no bangs, dramatic winged black eyeliner, warm red-lipped smile, gold hoop earrings, broad heavy shoulders. Exaggerated giant head filling the frame, close-up head and shoulders bust only, wearing a purple boxing tank top, flat solid teal background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "babe-ruth",
+   "seed": 38,
+   "prompt": "cartoon caricature illustration of 1920s baseball legend Babe Ruth as a chubby heavyweight boxer: round wide face, broad flat nose, thin cheeky smile, navy baseball cap, color illustration. Exaggerated giant head, head and shoulders bust, wearing a light blue boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "chris-farley",
+   "seed": 21,
+   "prompt": "cartoon caricature illustration of comedian Chris Farley as a chubby heavyweight boxer: round flushed face, double chin, messy sandy-blond hair, huge open grin. Exaggerated giant head, head and shoulders bust, wearing a green boxing tank top, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "dj-khaled",
+   "seed": 32,
+   "prompt": "cartoon caricature illustration of DJ Khaled as a chubby heavyweight boxer: short black hair with faded sides, full dense black beard, thick eyebrows, confident smile. Exaggerated giant head, head and shoulders bust, wearing a light blue boxing tank top, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "drew-carey",
+   "seed": 36,
+   "prompt": "cartoon caricature illustration of comedian Drew Carey as a chubby heavyweight boxer: short gray buzz cut, rectangular glasses, huge open-mouth laugh, ruddy cheeks. Exaggerated giant head, head and shoulders bust, wearing a orange boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "jack-black",
+   "seed": 37,
+   "prompt": "cartoon caricature illustration of actor Jack Black as a chubby heavyweight boxer: shaggy dark brown hair, graying beard, raised eyebrow, manic grin. Exaggerated giant head, head and shoulders bust, wearing a red boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "james-corden",
+   "seed": 41,
+   "prompt": "cartoon caricature illustration of James Corden as a chubby heavyweight boxer: neat side-swept light brown hair, ginger stubble, very full cheeks, cheeky grin. Exaggerated giant head, head and shoulders bust, wearing a orange boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "john-belushi",
+   "seed": 39,
+   "prompt": "cartoon caricature illustration of comedian John Belushi as a chubby heavyweight boxer: round chubby face, very thick dark eyebrows, messy black mop of hair, devilish crooked smirk. Exaggerated giant head, head and shoulders bust, wearing a yellow boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "john-goodman",
+   "seed": 131,
+   "prompt": "cartoon caricature illustration of actor John Goodman as a chubby heavyweight boxer: older man, swept-back gray hair, long jowly face, arched eyebrows, squinting eyes, warm closed-lip smirk. Exaggerated giant head filling the frame, head and shoulders bust only, wearing an orange boxing tank top covering his chest, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "jonah-hill",
+   "seed": 34,
+   "prompt": "cartoon caricature illustration of actor Jonah Hill as a chubby heavyweight boxer: slicked-back light brown hair, full reddish-brown beard, black thick-rimmed glasses. Exaggerated giant head, head and shoulders bust, wearing a orange boxing tank top, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "kevin-james",
+   "seed": 33,
+   "prompt": "cartoon caricature illustration of comedian Kevin James as a chubby heavyweight boxer: round face, double chin, short brown hair, light stubble, goofy grin. Exaggerated giant head, head and shoulders bust, wearing a yellow boxing tank top, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "oprah-winfrey",
+   "seed": 46,
+   "prompt": "cartoon caricature illustration of Oprah Winfrey as a chubby heavyweight boxer: voluminous dark wavy hair, large black rectangular glasses, warm smile, gold earrings. Exaggerated giant head, head and shoulders bust, wearing a pink boxing tank top, flat solid teal background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "rebel-wilson",
+   "seed": 44,
+   "prompt": "cartoon caricature illustration of comedian Rebel Wilson as a chubby heavyweight boxer: long blonde hair with straight bangs, round face, big bright smile. Exaggerated giant head, head and shoulders bust, wearing a light blue boxing tank top, flat solid teal background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "rosie-o-donnell",
+   "seed": 140,
+   "prompt": "cartoon caricature illustration of comedian Rosie O'Donnell as a boxer: shoulder-length dark brown side-swept hair, round face, big toothy smile, double chin. Exaggerated giant head filling the frame, close-up head and shoulders bust only, wearing a green boxing tank top, flat solid purple background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "seth-rogen",
+   "seed": 43,
+   "prompt": "cartoon caricature illustration of comedian Seth Rogen as a chubby heavyweight boxer: messy curly hair, scruffy beard, round glasses, squinting laugh. Exaggerated giant head, head and shoulders bust, wearing a orange boxing tank top, flat solid teal background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "winston-churchill",
+   "seed": 35,
+   "prompt": "cartoon caricature illustration of Winston Churchill as a chubby heavyweight boxer: elderly, bald with wispy white side hair, bulldog scowl, heavy jowls, black bowtie, fat cigar in mouth, no mustache. Exaggerated giant head, head and shoulders bust, wearing a purple boxing tank top, flat solid cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "zach-galifianakis",
+   "seed": 45,
+   "prompt": "cartoon caricature illustration of comedian Zach Galifianakis as a chubby heavyweight boxer: enormous bushy beard, messy receding hair, deadpan stare. Exaggerated giant head, head and shoulders bust, wearing a green boxing tank top, flat solid teal background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "you",
+   "seed": 809,
+   "prompt": "cartoon caricature illustration of a determined scrappy young underdog boxer: short messy black hair, focused eyes, slight smile, wearing a black boxing tank top and green boxing gloves raised. Exaggerated head, head and shoulders bust, flat solid deep cobalt blue background, blue backdrop, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  }
+ ]
+}
