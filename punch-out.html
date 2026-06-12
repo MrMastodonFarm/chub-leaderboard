@@ -274,6 +274,38 @@
         0 1px 0 var(--shadow);
     }
 
+    .footer-actions {
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    button.reset {
+      height: 47px;
+      padding: 0 18px;
+      border: 3px solid #fff;
+      box-shadow:
+        0 0 0 2px var(--shadow),
+        0 4px 0 var(--shadow);
+      background: #15309b;
+      color: var(--cabinet-white);
+      font: inherit;
+      font-size: 0.7rem;
+      cursor: pointer;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 #010c35;
+    }
+
+    button.reset:hover {
+      background: #1d3cba;
+    }
+
+    button.reset:active {
+      transform: translateY(3px);
+      box-shadow:
+        0 0 0 2px var(--shadow),
+        0 1px 0 var(--shadow);
+    }
+
     .layout {
       display: grid;
       grid-template-columns: 308px 1fr;
@@ -757,6 +789,9 @@
       </section>
     </section>
 
+    <div class="footer-actions">
+      <button type="button" id="resetButton" class="reset">Reset Career</button>
+    </div>
     <p class="footer-note">Weights are approximate public figures used here as playful milestones. This page is an original retro boxing homage, not an official Nintendo or Punch-Out screen.</p>
   </main>
   <script>
@@ -833,6 +868,54 @@
 
     function clamp(number, min, max) {
       return Math.max(min, Math.min(max, number));
+    }
+
+    const STORAGE_KEY = "punchout-save-v1";
+    // Times each fighter has beaten you (current weight regressed past them).
+    let beatenBy = {};
+
+    function totalLosses() {
+      return Object.values(beatenBy).reduce((sum, n) => sum + n, 0);
+    }
+
+    function loadSave() {
+      try {
+        return JSON.parse(localStorage.getItem(STORAGE_KEY));
+      } catch (err) {
+        return null;
+      }
+    }
+
+    function persistSave(state) {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify({
+          start: state.start,
+          current: state.current,
+          goal: state.goal,
+          beatenBy
+        }));
+      } catch (err) {
+        // Storage unavailable (private mode, etc.) -- page still works, just won't persist.
+      }
+    }
+
+    function parseRecord(record) {
+      const match = record.match(/(\d+)\s*-\s*(\d+)\s+(\d+)KO/);
+      return match
+        ? { wins: +match[1], losses: +match[2], kos: +match[3] }
+        : null;
+    }
+
+    // Live record: a win (by KO) for each time they sent you back up the
+    // ladder, a loss while you have them cleared.
+    function fightRecord(celeb, state) {
+      const base = parseRecord(celeb.record);
+      if (!base) {
+        return celeb.record;
+      }
+      const winsOverYou = beatenBy[celeb.name] || 0;
+      const koedByYou = cleared(celeb, state) ? 1 : 0;
+      return `${base.wins + winsOverYou} - ${base.losses + koedByYou}  ${base.kos + winsOverYou}KO`;
     }
 
     function readState() {
@@ -974,7 +1057,7 @@
         <div class="vs-panel">
           <div class="nes-dim">${nextTarget ? circuitOf(opponent) : "World Circuit"}</div>
           <div class="nes-name">Challenger</div>
-          <div class="nes-record">${wins} - 0  ${wins}KO</div>
+          <div class="nes-record">${wins} - ${totalLosses()}  ${wins}KO</div>
           <div class="nes-portrait framed">
             <img src="assets/fighters/you.png" alt="" onerror="this.style.display='none'">
           </div>
@@ -991,7 +1074,7 @@
             <div class="nes-rank">Ranked: #${rankOf(opponent)}</div>
             <div class="nes-name">${opponent.name}</div>
             ${portraitBox(opponent, "framed")}
-            <div class="nes-record">${opponent.record}</div>
+            <div class="nes-record">${fightRecord(opponent, state)}</div>
             <div class="nes-quote">"${opponent.quote}"</div>
             <div class="nes-dim">From ${opponent.home}<br>Age: ${opponent.age}  Ht: ${opponent.height}  Wt: ${opponent.weight}</div>
           </div>
@@ -1063,7 +1146,7 @@
               <div class="nes-rank">Ranked: #${rank}</div>
               <div class="nes-name">${celeb.name}</div>
               ${portraitBox(celeb)}
-              <div class="nes-record">${celeb.record}</div>
+              <div class="nes-record">${fightRecord(celeb, state)}</div>
               <div class="nes-quote">"${celeb.quote}"</div>
               <div class="nes-dim">From ${celeb.home}<br>Age: ${celeb.age}  Ht: ${celeb.height}  Wt: ${celeb.weight}</div>
               ${statusLine}
@@ -1090,8 +1173,62 @@
       buildRoster(state, nextTarget);
     }
 
-    document.getElementById("updateButton").addEventListener("click", renderPage);
-    renderPage();
+    function handleUpdate() {
+      const prev = loadSave();
+      const state = readState();
+      if (prev) {
+        const prevState = {
+          start: prev.start,
+          current: prev.current,
+          goal: prev.goal,
+          isLosing: prev.goal < prev.start
+        };
+        const wrongWay = prevState.isLosing
+          ? state.current > prevState.current
+          : state.current < prevState.current;
+        if (wrongWay) {
+          CELEBRITIES.filter(
+            (celeb) => cleared(celeb, prevState) && !cleared(celeb, state)
+          ).forEach((celeb) => {
+            beatenBy[celeb.name] = (beatenBy[celeb.name] || 0) + 1;
+          });
+        }
+      }
+      persistSave(state);
+      renderPage();
+    }
+
+    function handleReset() {
+      try {
+        localStorage.removeItem(STORAGE_KEY);
+      } catch (err) {
+        // Ignore; nothing to clear.
+      }
+      beatenBy = {};
+      ["startWeight", "currentWeight", "goalWeight"].forEach((id) => {
+        const input = document.getElementById(id);
+        input.value = input.defaultValue;
+      });
+      persistSave(readState());
+      renderPage();
+    }
+
+    function init() {
+      const saved = loadSave();
+      if (saved) {
+        beatenBy = saved.beatenBy || {};
+        document.getElementById("startWeight").value = saved.start;
+        document.getElementById("currentWeight").value = saved.current;
+        document.getElementById("goalWeight").value = saved.goal;
+      } else {
+        persistSave(readState());
+      }
+      renderPage();
+    }
+
+    document.getElementById("updateButton").addEventListener("click", handleUpdate);
+    document.getElementById("resetButton").addEventListener("click", handleReset);
+    init();
   </script>
 </body>
 </html>

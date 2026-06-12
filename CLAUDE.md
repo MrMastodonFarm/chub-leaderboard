@@ -27,7 +27,7 @@ Vanilla HTML/CSS/JS only. No frameworks, no bundler, no npm.
 
 ## Patterns
 - **DOM rendering**: imperative full-rebuild on each update (no virtual DOM, no diffing). `renderPage()` in punch-out, `renderChart()`/`renderStats()` in index.
-- **State**: read directly from the three weight `<input>`s on each render; defaults live in the HTML `value` attributes. No localStorage — the two pages do not share state.
+- **State**: read directly from the three weight `<input>`s on each render; defaults live in the HTML `value` attributes. `punch-out.html` persists weights plus a per-fighter `beatenBy` map in localStorage (`punchout-save-v1`): on Fight!, fighters that drop out of the cleared set while current weight moved away from the goal each record a win-by-KO over you (and a loss on your record); fighter records render live via `fightRecord()` (base `record` string + wins over you + a loss while cleared). Reset Career clears the save. `index.html` has no persistence — the two pages do not share state.
 - **Photos (`index.html`)**: Wikipedia REST API (`/page/summary/{title}`) with fallback to initials avatar.
 - **Portraits (`punch-out.html`)**: image-first with CSS fallback. Filename is `<fighterSlug(name)>.png` (kebab-case), with explicit overrides possible in `PORTRAIT_FILES`. On image load, `has-art` class hides the fallback; on error the `<img>` removes itself and CSS-only pixel-art divs (colored by `--hair`/`--skin`/`--shirt` custom properties from celebrity data) show instead.
 
