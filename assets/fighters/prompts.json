@@ -1,5 +1,5 @@
 {
- "_post_process": "downscale to 96x96 BOX, saturation x1.25, quantize 16 colors MEDIANCUT, upscale NEAREST, save 256x256 (see pixelate() history)",
+ "_post_process": "fighters: downscale to 96x96 BOX, saturation x1.25, quantize 16 colors MEDIANCUT, upscale NEAREST, save 256x256. crowd backdrop: downscale to 320x120 BOX, darken x0.55, quantize 16, upscale NEAREST x3 (see pixelate() history)",
  "arch": "sdxl",
  "checkpoint": "SDXL/juggernautXL_juggXIByRundiffusion.safetensors",
  "width": 832,
@@ -98,8 +98,15 @@
   },
   {
    "name": "you",
-   "seed": 809,
-   "prompt": "cartoon caricature illustration of a determined scrappy young underdog boxer: short messy black hair, focused eyes, slight smile, wearing a black boxing tank top and green boxing gloves raised. Exaggerated head, head and shoulders bust, flat solid deep cobalt blue background, blue backdrop, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+   "seed": 811,
+   "prompt": "cartoon caricature illustration of young actor Jeff Bridges age 40 as a scrappy underdog boxer: shoulder-length shaggy dark brown hair with a few subtle gray streaks at the temples, short dark brown goatee beard, youthful smooth unwrinkled face, squinting amused eyes, laid-back easy grin. Exaggerated giant head, head and shoulders bust, wearing a black boxing tank top and green boxing gloves raised, flat solid deep cobalt blue background, single diagonal boxing ring rope behind the shoulders, bold black outlines, flat cel shading, retro video game character select art"
+  },
+  {
+   "name": "crowd",
+   "seed": 77,
+   "width": 1216,
+   "height": 448,
+   "prompt": "retro video game pixel art boxing arena crowd seen from the ring, dark moody arena, rows and rows of tiny cheering spectators fading into darkness, raised fists, varied shirt colors muted in shadow, dim haze, no ring no boxers no foreground figures, wide shot of audience only, flat cel shading, bold dark palette, NES boxing game background art"
   }
  ]
 }

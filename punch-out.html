@@ -38,7 +38,7 @@
     body {
       min-height: 100vh;
       background:
-        linear-gradient(180deg, #75c1ff 0 18px, #2d6bff 18px 40px, #0d2389 40px 100%);
+        linear-gradient(180deg, #14145e 0, #0a0a35 220px, #000 560px);
       color: var(--cabinet-white);
       font-family: "Press Start 2P", "Courier New", monospace;
       image-rendering: pixelated;
@@ -83,130 +83,125 @@
     .marquee {
       position: relative;
       overflow: hidden;
-      background:
-        linear-gradient(180deg, #00144f 0 18%, #1433b0 18% 58%, #081b6d 58% 100%);
-      padding: 12px 14px 14px;
+      background: #000;
+      padding: 16px 14px 14px;
       margin-bottom: 12px;
     }
 
-    .marquee::before,
-    .marquee::after {
+    .marquee::before {
       content: "";
       position: absolute;
       inset: 0;
       pointer-events: none;
-    }
-
-    .marquee::before {
       background:
-        radial-gradient(circle at 10% 24%, #f7d03e 0 2px, transparent 2px),
-        radial-gradient(circle at 22% 70%, #f7d03e 0 2px, transparent 2px),
-        radial-gradient(circle at 79% 28%, #f7d03e 0 2px, transparent 2px),
-        radial-gradient(circle at 91% 64%, #f7d03e 0 2px, transparent 2px);
-      opacity: 0.75;
+        radial-gradient(circle at 8% 30%, #f7d03e 0 2px, transparent 2px),
+        radial-gradient(circle at 17% 76%, #fff 0 2px, transparent 2px),
+        radial-gradient(circle at 84% 24%, #fff 0 2px, transparent 2px),
+        radial-gradient(circle at 93% 68%, #f7d03e 0 2px, transparent 2px);
+      opacity: 0.6;
     }
 
-    .marquee::after {
-      background: linear-gradient(90deg, transparent 0, rgba(255, 255, 255, 0.12) 48%, transparent 100%);
-      transform: skewX(-22deg) translateX(-58%);
-      animation: cabinetShine 7s linear infinite;
-    }
-
-    .marquee-grid {
-      position: relative;
-      z-index: 1;
-      display: grid;
-      grid-template-columns: 132px 1fr 132px;
-      gap: 12px;
-      align-items: center;
-    }
-
-    .star-column {
-      display: grid;
-      gap: 6px;
-      justify-items: center;
-    }
-
-    .star-badge,
-    .record-chip {
-      min-width: 108px;
-      padding: 7px 8px;
-      background: var(--cabinet-red);
-      color: var(--cabinet-white);
-      text-align: center;
-      font-size: 0.72rem;
-      border: 2px solid var(--shadow);
-      box-shadow: inset 0 0 0 2px #ffd8a9;
-    }
-
-    .record-chip {
-      background: #0d8bd1;
+    .rope-strip {
+      height: 16px;
+      max-width: 880px;
+      margin: 0 auto;
+      background: linear-gradient(
+        180deg,
+        var(--rope-red) 0 4px,
+        transparent 4px 6px,
+        var(--rope-white) 6px 10px,
+        transparent 10px 12px,
+        var(--rope-blue) 12px 16px
+      );
     }
 
     .title-stack {
+      position: relative;
+      z-index: 1;
       display: grid;
-      gap: 4px;
+      gap: 8px;
       justify-items: center;
       text-align: center;
+      padding: 14px 0 12px;
     }
 
     .title-kicker {
-      color: var(--cabinet-cyan);
+      color: var(--cabinet-white);
       font-size: 0.76rem;
+      text-shadow: 2px 2px 0 #000;
     }
 
     .title-main {
-      display: inline-grid;
-      gap: 2px;
-      line-height: 0.9;
+      display: grid;
+      gap: 6px;
+      line-height: 1;
     }
 
     .title-main span {
-      display: inline-block;
-      padding: 3px 12px 5px;
-      background: var(--cabinet-orange);
-      color: #190800;
-      font-size: clamp(1.55rem, 4.7vw, 3.15rem);
-      box-shadow:
-        4px 0 0 #6a1b00,
-        -4px 0 0 #6a1b00,
-        0 4px 0 #6a1b00,
-        0 -4px 0 #6a1b00;
+      display: block;
+      color: var(--cabinet-cyan);
+      font-size: clamp(0.95rem, 2.6vw, 1.5rem);
+      text-shadow: 2px 2px 0 #043870;
     }
 
-    .title-main .title-blue {
-      background: var(--cabinet-cyan);
-      color: #021435;
-      box-shadow:
-        4px 0 0 #043870,
-        -4px 0 0 #043870,
-        0 4px 0 #043870,
-        0 -4px 0 #043870;
+    .title-main .title-big {
+      color: var(--cabinet-gold);
+      font-size: clamp(1.9rem, 6.4vw, 3.7rem);
+      text-shadow:
+        3px 0 0 var(--cabinet-red),
+        -3px 0 0 var(--cabinet-red),
+        0 3px 0 var(--cabinet-red),
+        0 -3px 0 var(--cabinet-red),
+        3px 3px 0 var(--cabinet-red),
+        -3px -3px 0 var(--cabinet-red),
+        3px -3px 0 var(--cabinet-red),
+        -3px 3px 0 var(--cabinet-red),
+        6px 6px 0 #470800;
     }
 
-    .title-sub {
-      color: #d7e2ff;
-      font-size: 0.76rem;
-      line-height: 1.35;
-      max-width: 740px;
+    .title-press {
+      margin-top: 6px;
+      color: var(--cabinet-white);
+      font-size: 0.8rem;
+      animation: nesBlink 1.1s steps(2, start) infinite;
+    }
+
+    .title-copy {
+      color: var(--cabinet-gray);
+      font-size: 0.58rem;
     }
 
     .top-strip {
       background: var(--cabinet-black);
-      padding: 10px;
+      padding: 12px 10px 14px;
       margin-bottom: 12px;
+    }
+
+    .strip-head {
+      text-align: center;
+      color: var(--cabinet-green);
+      font-size: 0.74rem;
+      margin-bottom: 12px;
+      text-shadow: 2px 2px 0 #001a06;
     }
 
     .controls {
       display: grid;
       grid-template-columns: repeat(4, minmax(120px, 1fr));
-      gap: 8px;
+      gap: 12px;
       align-items: end;
     }
 
     .field {
       display: grid;
-      gap: 4px;
+      gap: 6px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .field:focus-within label::before {
+      content: "\25B6 ";
+      color: var(--cabinet-orange);
     }
 
     .field label,
@@ -220,45 +215,63 @@
     }
 
     .field label {
-      color: var(--cabinet-gold);
+      color: var(--cabinet-white);
     }
 
     .field input {
       width: 100%;
-      border: 2px solid var(--shadow);
-      box-shadow: inset 0 0 0 2px #fff;
-      background: #f4f2ea;
-      color: #000;
+      border: 3px solid #fff;
+      box-shadow: 0 0 0 2px var(--shadow);
+      background: #000;
+      color: var(--cabinet-green);
       padding: 10px 8px;
       font: inherit;
-      font-size: 1rem;
-      font-weight: 700;
+      font-size: 1.1rem;
+      text-align: center;
+      letter-spacing: 0.2em;
       text-transform: none;
     }
 
+    .field input::-webkit-outer-spin-button,
+    .field input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .field input {
+      -moz-appearance: textfield;
+      appearance: textfield;
+    }
+
     .field input:focus {
-      outline: 2px solid var(--cabinet-cyan);
-      outline-offset: 1px;
+      outline: none;
+      color: var(--cabinet-gold);
+      border-color: var(--cabinet-gold);
     }
 
     .controls button {
-      height: 44px;
-      border: 2px solid var(--shadow);
+      height: 47px;
+      border: 3px solid #fff;
       box-shadow:
-        inset 0 0 0 2px #fff4ae,
-        0 3px 0 #6d2700;
-      background: linear-gradient(180deg, #ffbd43 0, #ef7f17 100%);
-      color: #220500;
+        0 0 0 2px var(--shadow),
+        0 4px 0 var(--shadow);
+      background: var(--cabinet-red);
+      color: var(--cabinet-white);
       font: inherit;
-      font-weight: 700;
+      font-size: 0.9rem;
       cursor: pointer;
+      text-transform: uppercase;
+      text-shadow: 2px 2px 0 #470800;
+    }
+
+    .controls button:hover {
+      background: #d92e22;
     }
 
     .controls button:active {
-      transform: translateY(2px);
+      transform: translateY(3px);
       box-shadow:
-        inset 0 0 0 2px #fff4ae,
-        0 1px 0 #6d2700;
+        0 0 0 2px var(--shadow),
+        0 1px 0 var(--shadow);
     }
 
     .layout {
@@ -384,9 +397,25 @@
     }
 
     .vs-screen {
-      background: #000;
+      position: relative;
+      background:
+        #04041a url("assets/fighters/crowd.png") center / cover no-repeat;
       padding: 18px 14px;
       border-bottom: 3px solid var(--shadow);
+    }
+
+    .vs-screen::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 70% 80% at 50% 45%, rgba(0, 0, 6, 0.5) 25%, rgba(0, 0, 6, 0.1) 100%);
+      pointer-events: none;
+    }
+
+    .vs-grid,
+    .vs-coach {
+      position: relative;
+      z-index: 1;
     }
 
     .vs-grid {
@@ -409,9 +438,15 @@
 
     .vs-mid {
       align-self: center;
-      color: var(--cabinet-orange);
-      font-size: 1.3rem;
+      color: var(--cabinet-gold);
+      font-size: 1.6rem;
       padding: 0 6px;
+      text-shadow:
+        2px 0 0 var(--cabinet-red),
+        -2px 0 0 var(--cabinet-red),
+        0 2px 0 var(--cabinet-red),
+        0 -2px 0 var(--cabinet-red),
+        4px 4px 0 #470800;
     }
 
     .nes-rank {
@@ -480,7 +515,8 @@
     }
 
     .circuit-title {
-      color: var(--cabinet-white);
+      color: var(--cabinet-gold);
+      text-shadow: 2px 2px 0 #470800;
       font-size: 0.78rem;
       display: flex;
       justify-content: space-between;
@@ -514,6 +550,13 @@
 
     .fighter-card.locked {
       opacity: 0.55;
+    }
+
+    .fighter-card.next {
+      box-shadow:
+        inset 0 0 0 2px var(--cabinet-gold),
+        0 0 0 2px var(--shadow);
+      background: #160e00;
     }
 
     .fighter-card.cleared .nes-portrait img {
@@ -629,15 +672,6 @@
       line-height: 1.45;
     }
 
-    @keyframes cabinetShine {
-      0% {
-        transform: skewX(-22deg) translateX(-58%);
-      }
-      100% {
-        transform: skewX(-22deg) translateX(172%);
-      }
-    }
-
     @media (max-width: 980px) {
       .layout {
         grid-template-columns: 1fr;
@@ -646,14 +680,6 @@
       .controls {
         grid-template-columns: repeat(2, minmax(120px, 1fr));
       }
-
-      .marquee-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .star-column {
-        grid-auto-flow: column;
-      }
     }
 
     @media (max-width: 620px) {
@@ -661,44 +687,8 @@
         grid-template-columns: 1fr;
       }
 
-      .score-strip {
-        grid-template-columns: 1fr;
-        justify-items: center;
-        text-align: center;
-      }
-
-      .score-side.right {
-        text-align: center;
-      }
-
-      .fight-scene {
-        min-height: 470px;
-      }
-
-      .fighter.user {
-        left: 4%;
-        transform: scale(0.72);
-      }
-
-      .fighter.opponent {
-        right: 2%;
-        transform: scale(0.86);
-      }
-
-      .speech {
-        position: relative;
-        top: auto;
-        right: auto;
-        margin: 12px;
-        max-width: none;
-      }
-
       .circuit-grid {
         grid-template-columns: 1fr;
-      }
-
-      .title-main span {
-        padding-inline: 8px;
       }
     }
   </style>
@@ -706,27 +696,21 @@
 <body>
   <main class="shell">
     <header class="marquee">
-      <div class="marquee-grid">
-        <div class="star-column">
-          <div class="star-badge">3 Star Card</div>
-          <div class="record-chip">WVBA Night</div>
+      <div class="rope-strip"></div>
+      <div class="title-stack">
+        <div class="title-kicker">The W.V.B.A. Presents</div>
+        <div class="title-main">
+          <span>Celebrity</span>
+          <span class="title-big">Punch-Out!!</span>
         </div>
-        <div class="title-stack">
-          <div class="title-kicker">Pixel Prizefighting Presents</div>
-          <div class="title-main">
-            <span>Celebrity</span>
-            <span class="title-blue">Punch-Out</span>
-          </div>
-          <p class="title-sub">Track each weight milestone like the next fighter on a cartridge-era title run. Original art direction, clear homage energy.</p>
-        </div>
-        <div class="star-column">
-          <div class="star-badge">Title Defense</div>
-          <div class="record-chip">No. 1 Contender</div>
-        </div>
+        <div class="title-press">Press Start</div>
+        <div class="title-copy">&copy; 2026 Chub City Athletic Commission &middot; Heavyweight Ladder Night</div>
       </div>
+      <div class="rope-strip"></div>
     </header>
 
     <section class="top-strip">
+      <div class="strip-head">Enter Your Stats</div>
       <div class="controls">
         <div class="field">
           <label for="startWeight">Start Weight</label>
@@ -740,7 +724,7 @@
           <label for="goalWeight">Goal Weight</label>
           <input type="number" id="goalWeight" value="180" min="50" max="600">
         </div>
-        <button type="button" id="updateButton">Update Match Card</button>
+        <button type="button" id="updateButton">Fight!</button>
       </div>
     </section>
 
