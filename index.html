@@ -138,24 +138,22 @@
 <div class="alt-view"><a href="punch-out.html">Try the 8-bit opponent ladder version</a></div>
 
 <script>
+// Sorted ascending by documented heaviest weight (lbs). Weights are approximate
+// peak figures gathered from public reporting/self-disclosure, not medical data.
 const CELEBRITIES = [
-  { name: "Oprah Winfrey",       weight: 185, wiki: "Oprah_Winfrey" },
-  { name: "Zach Galifianakis",   weight: 190, wiki: "Zach_Galifianakis" },
-  { name: "Rebel Wilson",        weight: 193, wiki: "Rebel_Wilson" },
-  { name: "Seth Rogen",          weight: 197, wiki: "Seth_Rogen" },
-  { name: "Adele",               weight: 201, wiki: "Adele" },
-  { name: "James Corden",        weight: 205, wiki: "James_Corden" },
-  { name: "Rosie O'Donnell",     weight: 209, wiki: "Rosie_O'Donnell" },
-  { name: "John Belushi",        weight: 213, wiki: "John_Belushi" },
-  { name: "Babe Ruth",           weight: 215, wiki: "Babe_Ruth" },
-  { name: "Jack Black",          weight: 220, wiki: "Jack_Black" },
-  { name: "Drew Carey",          weight: 225, wiki: "Drew_Carey" },
-  { name: "Winston Churchill",   weight: 228, wiki: "Winston_Churchill" },
-  { name: "Jonah Hill",          weight: 232, wiki: "Jonah_Hill" },
-  { name: "Kevin James",         weight: 235, wiki: "Kevin_James" },
-  { name: "DJ Khaled",           weight: 238, wiki: "DJ_Khaled" },
-  { name: "John Goodman",        weight: 241, wiki: "John_Goodman" },
-  { name: "Gabriel Iglesias",    weight: 244, wiki: "Gabriel_Iglesias" },
+  { name: "Ricky Gervais",       weight: 182, wiki: "Ricky_Gervais" },
+  { name: "Ed Sheeran",          weight: 188, wiki: "Ed_Sheeran" },
+  { name: "Wendy Williams",      weight: 195, wiki: "Wendy_Williams_(television_host)" },
+  { name: "Khloé Kardashian",    weight: 203, wiki: "Khloé_Kardashian" },
+  { name: "Seth Rogen",          weight: 210, wiki: "Seth_Rogen" },
+  { name: "Robert De Niro",      weight: 215, wiki: "Robert_De_Niro" },
+  { name: "John Belushi",        weight: 222, wiki: "John_Belushi" },
+  { name: "Rosie O'Donnell",     weight: 230, wiki: "Rosie_O'Donnell" },
+  { name: "Oprah Winfrey",       weight: 237, wiki: "Oprah_Winfrey" },
+  { name: "Adele",               weight: 239, wiki: "Adele" },
+  { name: "Zach Galifianakis",   weight: 240, wiki: "Zach_Galifianakis" },
+  { name: "Jack Black",          weight: 245, wiki: "Jack_Black" },
+  { name: "Winston Churchill",   weight: 250, wiki: "Winston_Churchill" },
 ];
 
 const photoCache = {};
@@ -178,9 +176,21 @@ function initials(name) {
   return name.split(' ').map(w => w[0]).join('').slice(0, 2).toUpperCase();
 }
 
-function renderStats(start, current, goal) {
-  const lost = start - current;
-  const toGo = current - goal;
+// Decimal places in an entered number (e.g. 230.5 -> 1, 230 -> 0).
+function decimals(n) {
+  const i = String(n).indexOf('.');
+  return i === -1 ? 0 : String(n).length - i - 1;
+}
+
+// Round to a fixed number of decimal places, dropping float artifacts.
+function roundTo(value, places) {
+  const f = Math.pow(10, places);
+  return Math.round(value * f) / f;
+}
+
+function renderStats(start, current, goal, prec) {
+  const lost = roundTo(start - current, prec);
+  const toGo = roundTo(current - goal, prec);
   const total = start - goal;
   const pct = Math.max(0, Math.min(100, Math.round((lost / total) * 100)));
   const statsEl = document.getElementById('stats');
@@ -217,12 +227,13 @@ function renderChart() {
   const current = parseFloat(document.getElementById('currentWeight').value) || 230;
   const goal    = parseFloat(document.getElementById('goalWeight').value)    || 180;
 
-  renderStats(start, current, goal);
+  const prec = Math.max(decimals(start), decimals(current), decimals(goal));
+  renderStats(start, current, goal, prec);
 
   const isLosing = goal < start;
-  // Fixed display range: 245 (left/heavy) → 178 (right/light)
-  const dispMax = 245;
-  const dispMin = 178;
+  // Fixed display range: 252 (left/heavy) → 176 (right/light)
+  const dispMax = 252;
+  const dispMin = 176;
   const dispRange = dispMax - dispMin;
 
   // Filter & sort celebs in display range (heavy → light = left → right)
@@ -464,7 +475,7 @@ function renderChart() {
 
   const nextEl = document.getElementById('nextCeleb');
   if (nextCeleb) {
-    const diff = Math.abs(current - nextCeleb.weight);
+    const diff = roundTo(Math.abs(current - nextCeleb.weight), prec);
     nextEl.innerHTML = `Next milestone: <strong>${diff} lbs</strong> to pass <strong>${nextCeleb.name}</strong> (${nextCeleb.weight} lbs)`;
   } else {
     nextEl.innerHTML = celebs.length === 0

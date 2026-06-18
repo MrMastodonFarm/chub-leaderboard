@@ -795,68 +795,60 @@
     <p class="footer-note">Weights are approximate public figures used here as playful milestones. This page is an original retro boxing homage, not an official Nintendo or Punch-Out screen.</p>
   </main>
   <script>
+    // Sorted descending by documented heaviest weight (lbs). Ages/heights reflect
+    // each person at their heaviest. Figures are approximate peak markers gathered
+    // from public reporting/self-disclosure, not medical data.
     const CELEBRITIES = [
-      { name: "Chris Farley", weight: 244, hair: "#b07a3b", shirt: "#38b24a", skin: "#f2c18a",
-        home: "Madison, Wisconsin", age: 33, record: "1 - 99  1KO",
-        height: "5'8\"", quote: "Fat guy in a little coat." },
-      { name: "John Goodman", weight: 241, hair: "#3c1d0b", shirt: "#de5d35", skin: "#d79860",
-        home: "Affton, Missouri", age: 73, record: "12 - 18  5KO",
-        height: "6'2\"", quote: "I need my regular food: dead animals, bright colored snacks, things on sticks." },
-      { name: "DJ Khaled", weight: 238, hair: "#121212", shirt: "#49c3ff", skin: "#9a5b3b",
-        home: "New Orleans, Louisiana", age: 50, record: "16 - 12  9KO",
-        height: "5'7\"", quote: "I don't lose. All I do is win." },
-      { name: "Kevin James", weight: 235, hair: "#5e3715", shirt: "#f1cb31", skin: "#d79860",
-        home: "Mineola, New York", age: 60, record: "19 - 9  12KO",
-        height: "5'8\"", quote: "When you're a fat guy, you don't need a reason to sweat." },
-      { name: "Jonah Hill", weight: 232, hair: "#5f3318", shirt: "#f05e38", skin: "#f2c18a",
-        home: "Los Angeles, California", age: 42, record: "21 - 8  14KO",
-        height: "5'7\"", quote: "I asked Channing Tatum: 'If I eat less and go to a trainer, will I get in good shape?' 'Yeah, you dumb [bleep], it's the simplest thing in the entire world.'" },
-      { name: "Winston Churchill", weight: 228, hair: "#f4f4f4", shirt: "#8e72ff", skin: "#f2c18a",
-        home: "Woodstock, England", age: 65, record: "24 - 6  17KO",
+      { name: "Winston Churchill", weight: 250, hair: "#f4f4f4", shirt: "#8e72ff", skin: "#f2c18a",
+        home: "Woodstock, England", age: 70, record: "6 - 30  3KO",
         height: "5'6\"", quote: "Take away this pudding -- it has no theme!" },
-      { name: "Drew Carey", weight: 225, hair: "#6f3a1f", shirt: "#ff8738", skin: "#f2c18a",
-        home: "Cleveland, Ohio", age: 67, record: "25 - 6  19KO",
-        height: "5'10\"", quote: "If I cut myself shaving, sausage gravy comes out. That's why I always keep a little pile of biscuits next to the sink." },
-      { name: "Jack Black", weight: 220, hair: "#111111", shirt: "#ef6334", skin: "#d79860",
-        home: "Santa Monica, California", age: 56, record: "27 - 5  20KO",
+      { name: "Jack Black", weight: 245, hair: "#111111", shirt: "#ef6334", skin: "#d79860",
+        home: "Santa Monica, California", age: 55, record: "11 - 24  7KO",
         height: "5'6\"", quote: "Once I get up onstage, people worship me! Because I'm sexy... and chubby, man." },
-      { name: "Babe Ruth", weight: 215, hair: "#302012", shirt: "#4ec2e9", skin: "#d79860",
-        home: "Baltimore, Maryland", age: 31, record: "28 - 4  22KO",
-        height: "6'2\"", quote: "Don't worry about my weight. Fifteen pounds more and I'll be grand." },
-      { name: "John Belushi", weight: 213, hair: "#111111", shirt: "#f6d649", skin: "#f2c18a",
-        home: "Chicago, Illinois", age: 33, record: "29 - 4  23KO",
-        height: "5'8\"", quote: "Food fight!" },
-      { name: "Rosie O'Donnell", weight: 209, hair: "#5d2a18", shirt: "#39bb4d", skin: "#f2c18a",
-        home: "Commack, New York", age: 64, record: "30 - 3  24KO",
-        height: "5'7\"", quote: "Slim-Fast: for breakfast, a shake. For lunch, a shake. For dinner, you kill anyone with food on their plate." },
-      { name: "James Corden", weight: 205, hair: "#472717", shirt: "#f3722f", skin: "#f2c18a",
-        home: "High Wycombe, England", age: 47, record: "31 - 3  25KO",
-        height: "5'8\"", quote: "I once ate a king-size Dairy Milk in a carwash." },
-      { name: "Adele", weight: 201, hair: "#e4c161", shirt: "#7d67ff", skin: "#f2c18a",
-        home: "Tottenham, London", age: 38, record: "32 - 2  26KO",
-        height: "5'9\"", quote: "I love food and hate exercise." },
-      { name: "Seth Rogen", weight: 197, hair: "#5e3218", shirt: "#f08d21", skin: "#d79860",
-        home: "Vancouver, Canada", age: 44, record: "33 - 2  27KO",
-        height: "5'11\"", quote: "For chubby guys, I was their guy. Now I've blatantly sold out." },
-      { name: "Rebel Wilson", weight: 193, hair: "#f0d48f", shirt: "#53d1ff", skin: "#f2c18a",
-        home: "Sydney, Australia", age: 46, record: "34 - 1  28KO",
-        height: "5'4\"", quote: "Why 'Fat Amy'? So twig bitches like you don't do it behind my back." },
-      { name: "Zach Galifianakis", weight: 190, hair: "#171717", shirt: "#4fb34a", skin: "#d79860",
-        home: "Wilkesboro, North Carolina", age: 56, record: "35 - 1  29KO",
+      { name: "Zach Galifianakis", weight: 240, hair: "#171717", shirt: "#4fb34a", skin: "#d79860",
+        home: "Wilkesboro, North Carolina", age: 44, record: "15 - 20  10KO",
         height: "5'7\"", quote: "I was having a lot of vodka with sausage. Delicious, but bad for you." },
-      { name: "Oprah Winfrey", weight: 185, hair: "#23110a", shirt: "#ef5f72", skin: "#9a5b3b",
-        home: "Kosciusko, Mississippi", age: 72, record: "31 - 0  27KO",
-        height: "5'7\"", quote: "I love bread. I LOVE bread." }
+      { name: "Adele", weight: 239, hair: "#e4c161", shirt: "#7d67ff", skin: "#f2c18a",
+        home: "Tottenham, London", age: 31, record: "18 - 16  13KO",
+        height: "5'9\"", quote: "I love food and hate exercise." },
+      { name: "Oprah Winfrey", weight: 237, hair: "#23110a", shirt: "#ef5f72", skin: "#9a5b3b",
+        home: "Kosciusko, Mississippi", age: 38, record: "22 - 13  17KO",
+        height: "5'7\"", quote: "I love bread. I LOVE bread." },
+      { name: "Rosie O'Donnell", weight: 230, hair: "#5d2a18", shirt: "#39bb4d", skin: "#f2c18a",
+        home: "Commack, New York", age: 51, record: "25 - 9  19KO",
+        height: "5'7\"", quote: "Slim-Fast: for breakfast, a shake. For lunch, a shake. For dinner, you kill anyone with food on their plate." },
+      { name: "John Belushi", weight: 222, hair: "#111111", shirt: "#f6d649", skin: "#f2c18a",
+        home: "Chicago, Illinois", age: 33, record: "28 - 7  22KO",
+        height: "5'8\"", quote: "Food fight!" },
+      { name: "Robert De Niro", weight: 215, hair: "#2b1a10", shirt: "#9b2d2d", skin: "#d79860",
+        home: "New York City, New York", age: 37, record: "30 - 5  24KO",
+        height: "5'9\"", quote: "I ate my way through Italy and France for the role." },
+      { name: "Seth Rogen", weight: 210, hair: "#5e3218", shirt: "#f08d21", skin: "#d79860",
+        home: "Vancouver, Canada", age: 27, record: "32 - 4  26KO",
+        height: "5'10\"", quote: "For chubby guys, I was their guy. Now I've blatantly sold out." },
+      { name: "Khloé Kardashian", weight: 203, hair: "#d9b25f", shirt: "#d36a8f", skin: "#f2c18a",
+        home: "Los Angeles, California", age: 33, record: "34 - 3  28KO",
+        height: "5'10\"", quote: "I love to eat. I love to eat bad food. I don't have the best diet." },
+      { name: "Wendy Williams", weight: 195, hair: "#e8c860", shirt: "#b452d6", skin: "#9a5b3b",
+        home: "Asbury Park, New Jersey", age: 48, record: "35 - 2  29KO",
+        height: "6'0\"", quote: "Just push back, fatso. Stop eating so much." },
+      { name: "Ed Sheeran", weight: 188, hair: "#c4541f", shirt: "#43a047", skin: "#f2c18a",
+        home: "Framlingham, England", age: 25, record: "36 - 1  30KO",
+        height: "5'8\"", quote: "I stopped touring and carried on my diet of pizza and beer. Suddenly I didn't fit in anything." },
+      { name: "Ricky Gervais", weight: 182, hair: "#5a4636", shirt: "#4a7fb5", skin: "#f2c18a",
+        home: "Reading, England", age: 55, record: "37 - 1  31KO",
+        height: "5'8\"", quote: "The only reason I work out is to live longer so I can eat more cheese and drink more wine." }
     ];
 
     const CIRCUITS = [
-      { title: "Minor Circuit", start: 0, end: 5 },
-      { title: "Major Circuit", start: 6, end: 11 },
-      { title: "World Circuit", start: 12, end: 16 }
+      { title: "Minor Circuit", start: 0, end: 3 },
+      { title: "Major Circuit", start: 4, end: 7 },
+      { title: "World Circuit", start: 8, end: 12 }
     ];
 
     // Per-name filename overrides; everyone else gets <slug>.png.
-    const PORTRAIT_FILES = {};
+    // Khloé's accented name slugifies to "khlo-kardashian", so pin the file.
+    const PORTRAIT_FILES = { "Khloé Kardashian": "khloe-kardashian.png" };
 
     function fighterSlug(name) {
       return name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -868,6 +860,18 @@
 
     function clamp(number, min, max) {
       return Math.max(min, Math.min(max, number));
+    }
+
+    // Decimal places in an entered number (e.g. 230.5 -> 1, 230 -> 0).
+    function decimals(n) {
+      const i = String(n).indexOf(".");
+      return i === -1 ? 0 : String(n).length - i - 1;
+    }
+
+    // Round to a fixed number of decimal places, dropping float artifacts.
+    function roundTo(value, places) {
+      const f = Math.pow(10, places);
+      return Math.round(value * f) / f;
     }
 
     const STORAGE_KEY = "punchout-save-v1";
@@ -926,7 +930,8 @@
         start,
         current,
         goal,
-        isLosing: goal < start
+        isLosing: goal < start,
+        precision: Math.max(decimals(start), decimals(current), decimals(goal))
       };
     }
 
@@ -943,13 +948,14 @@
     }
 
     function poundsLost(state) {
-      return state.isLosing
+      const lost = state.isLosing
         ? Math.max(0, state.start - state.current)
         : Math.max(0, state.current - state.start);
+      return roundTo(lost, state.precision);
     }
 
     function poundsToGoal(state) {
-      return Math.max(0, Math.abs(state.current - state.goal));
+      return roundTo(Math.max(0, Math.abs(state.current - state.goal)), state.precision);
     }
 
     function withinGoalRun(celeb, state) {
@@ -1049,7 +1055,7 @@
 
     function buildArena(state, nextTarget) {
       const opponent = nextTarget || CELEBRITIES[CELEBRITIES.length - 1];
-      const gap = Math.abs(state.current - opponent.weight);
+      const gap = roundTo(Math.abs(state.current - opponent.weight), state.precision);
       const wins = clearedCount(state);
       document.getElementById("rankLabel").textContent = nextRank(nextTarget);
 
@@ -1131,7 +1137,7 @@
       const roster = CIRCUITS.map((circuit) => {
         const cards = CELEBRITIES.slice(circuit.start, circuit.end + 1).map((celeb, index) => {
           const status = getStatus(celeb, state, nextTarget);
-          const diff = Math.abs(state.current - celeb.weight);
+          const diff = roundTo(Math.abs(state.current - celeb.weight), state.precision);
           const rank = rankOf(celeb);
           const statusLine = status.label === "Cleared"
             ? `<div class="nes-koed">K.O.'d by you</div>`
